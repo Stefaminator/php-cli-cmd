@@ -1,0 +1,26 @@
+{
+  "name": "stefaminator/php-cli-cmd",
+  "version": "0.0.1",
+  "type": "library",
+  "description": "The PHP CLI CMD library",
+  "keywords": ["cli", "cmd"],
+  "license": "none",
+  "autoload": {
+    "psr-4": {
+      "Stefaminator\\": "src/Stefaminator/"
+    }
+  },
+  "require": {
+    "php": ">=7.2",
+    "corneltek/getoptionkit": "~2.0"
+  },
+  "require-dev": {
+    "roave/security-advisories": "dev-master",
+    "phpunit/phpunit": "~8.0"
+  },
+  "config": {
+    "platform": {
+      "php": "7.2"
+    }
+  }
+}
