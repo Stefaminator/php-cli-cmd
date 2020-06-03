@@ -7,13 +7,16 @@
   "license": "none",
   "autoload": {
     "psr-4": {
-      "Stefaminator\\": "src/Stefaminator/",
-      "Stefaminator\\Test\\": "tests/"
+      "Stefaminator\\": [
+        "src/Stefaminator/",
+        "tests/Stefaminator/"
+      ]
     }
   },
   "require": {
     "php": ">=7.2",
-    "corneltek/getoptionkit": "~2.0"
+    "corneltek/getoptionkit": "~2.0",
+    "ext-json": "*"
   },
   "require-dev": {
     "roave/security-advisories": "dev-master",
