@@ -4,7 +4,7 @@
   "type": "library",
   "description": "The PHP CLI CMD library",
   "keywords": ["cli", "cmd"],
-  "license": "none",
+  "license": "MIT",
   "autoload": {
     "psr-4": {
       "Stefaminator\\": [
