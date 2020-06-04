@@ -20,6 +20,8 @@ class AppParser {
 
             if ($cmd !== null) {
 
+                $cmd->handleOptionParseException();
+
                 $callable = $cmd->getCallable();
 
                 if ($callable !== null) {
@@ -40,13 +42,9 @@ class AppParser {
 
             App::eol();
 
-            Color::red('Uups, someting went wrong!');
+            App::echo('Uups, someting went wrong!', Color::FOREGROUND_COLOR_RED);
+            App::echo($e->getMessage(), Color::FOREGROUND_COLOR_RED);
             App::eol();
-
-            Color::red($e->getMessage());
-            App::eol();
-            App::eol();
-
         }
 
     }

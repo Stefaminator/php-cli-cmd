@@ -129,35 +129,51 @@ class Cmd {
         return $this->callable;
     }
 
+    public function handleOptionParseException(): void {
+
+        if($this->optionParseException === null) {
+            return;
+        }
+
+        App::eol();
+        App::echo('Uups, something went wrong!', Color::FOREGROUND_COLOR_RED);
+        App::echo($this->optionParseException->getMessage(), Color::FOREGROUND_COLOR_RED);
+
+        $this->help();
+
+        exit();
+    }
+
     public function help(): void {
 
-        $eol = "\n";
 
         $help = <<<EOT
 
-                  o       
-               ` /_\ '    
-              - (o o) -   
-  ----------ooO--(_)--Ooo----------
-                help?
-  ---------------------------------
-  
+              o       
+           ` /_\ '    
+          - (o o) -   
+----------ooO--(_)--Ooo----------
+            help?
+---------------------------------  
 EOT;
 
 
-        Color::yellow($help);
+        App::echo($help, Color::FOREGROUND_COLOR_YELLOW);
 
-        echo $eol;
+        App::eol();
 
         if (!empty($this->params)) {
 
-            echo $eol;
-            echo 'Parameters: ' . $eol;
+            App::eol();
+            App::echo('Parameters: ', Color::FOREGROUND_COLOR_GREEN);
+            App::eol();
 
             foreach ($this->params as $k => $v) {
 
-                echo '  ' . str_pad($k, 20, ' ');
-                echo ' ' . $v['description'] . $eol;
+                $line = '  ' . str_pad($k, 20, ' ');
+                $line .= ' ' . $v['description'] . App::EOL;
+
+                App::echo($line, Color::FOREGROUND_COLOR_GREEN);
 
             }
         }
@@ -165,6 +181,10 @@ EOT;
 
     public static function extend(string $cmd): Cmd {
         return new class($cmd) extends Cmd {};
+    }
+
+    public static function root(): Cmd {
+        return self::extend('__root');
     }
 
 

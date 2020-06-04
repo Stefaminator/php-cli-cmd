@@ -13,7 +13,7 @@ class TestApp1 extends App {
 
     public function setup(): Cmd {
 
-        return Cmd::extend('__root')
+        return Cmd::root()
             ->addParam('h|help', ['description' => 'Display the command help'])
             ->addSubCmd(
                 Cmd::extend('list')
