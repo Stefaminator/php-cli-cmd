@@ -37,6 +37,16 @@ class AppParser {
 
             }
         } catch (Exception $e) {
+
+            App::eol();
+
+            Color::red('Uups, someting went wrong!');
+            App::eol();
+
+            Color::red($e->getMessage());
+            App::eol();
+            App::eol();
+
         }
 
     }

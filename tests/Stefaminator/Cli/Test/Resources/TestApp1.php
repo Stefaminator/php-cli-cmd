@@ -52,38 +52,41 @@ class TestApp1 extends App {
             );
     }
 
+    /** @noinspection PhpUnusedParameterInspection */
     public function cmd(Cmd $cmd): void {
 
-        $this->eol();
+        self::eol();
 
         echo "Main Command has been executed";
 
-        $this->eol();
+        self::eol();
     }
 
+    /** @noinspection PhpUnusedParameterInspection */
     public function cmdList(Cmd $cmd): void {
 
         echo "\e[0;31;42mMerry Christmas!\e[0m\n";
 
         Color::green('Merry X-Mas');
 
-        $this->eol();
+        self::eol();
 
         Color::echo('Merry X-Mas', Color::FOREGROUND_COLOR_RED, Color::BACKGROUND_COLOR_GREEN);
 
-        $this->eol();
+        self::eol();
 
         Color::red('Merry X-Mas');
 
-        $this->eol();
+        self::eol();
     }
 
+    /** @noinspection PhpUnusedParameterInspection */
     public function cmdShow(Cmd $cmd): void {
 
         $total = 100;
 
-        $this->eol();
-        $this->eol();
+        self::eol();
+        self::eol();
 
         for($i=0; $i<$total; $i++){
 
@@ -98,19 +101,19 @@ class TestApp1 extends App {
             usleep($micro_seconds);
         }
 
-        $this->eol();
-        $this->eol();
+        self::eol();
+        self::eol();
     }
 
     public function cmdShowHello(Cmd $cmd): void {
 
         $name = $cmd->options->get('name');
 
-        $this->eol();
+        self::eol();
 
         echo "Hello $name";
 
-        $this->eol();
+        self::eol();
     }
 
     public function cmdShowStats(Cmd $cmd) {

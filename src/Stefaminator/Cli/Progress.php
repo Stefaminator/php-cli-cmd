@@ -27,7 +27,7 @@ class Progress {
         } else {
             $perc = (double)($done / $total);
         }
-        $bar = floor($perc * $size);
+        $bar = (int)floor($perc * $size);
 
         $status_bar = "\r";
 

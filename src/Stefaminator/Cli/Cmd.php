@@ -46,7 +46,7 @@ class Cmd {
     public $optionParseException;
 
     /**
-     * @var callable
+     * @var callable|null
      */
     private $callable;
 
@@ -85,11 +85,8 @@ class Cmd {
     public function setCallable(callable $callable): self {
 
         try {
-            $is_valid = $this->validateCallable($callable);
-            if ($is_valid) {
-                $this->callable = $callable;
+            $this->callable = $this->validateCallable($callable);
 
-            }
         } catch (Exception $e) {
             echo __METHOD__ . ' has been called with invalid callable: ' . $e->getMessage() . "\n";
         }
@@ -171,13 +168,12 @@ EOT;
     }
 
 
-
     /**
      * @param callable $callable
-     * @return bool
+     * @return callable
      * @throws Exception
      */
-    private function validateCallable(callable $callable): bool {
+    private function validateCallable(callable $callable): callable {
 
         $check = new ReflectionFunction($callable);
         $parameters = $check->getParameters();
@@ -198,6 +194,6 @@ EOT;
             throw new RuntimeException('Named type of Parameter 1 should be "' . __CLASS__ . '".');
         }
 
-        return true;
+        return $callable;
     }
 }

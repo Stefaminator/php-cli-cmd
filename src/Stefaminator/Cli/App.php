@@ -13,7 +13,7 @@ abstract class App {
      */
     abstract public function setup(): Cmd;
 
-    public function eol(): void {
+    public static function eol(): void {
         echo self::EOL;
     }
 }
