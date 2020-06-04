@@ -81,7 +81,7 @@ class Color {
         }
 
         // Add string and end coloring
-        $colored_string .=  $string . "\033[0m";
+        $colored_string .= $string . "\033[0m";
 
         return $colored_string;
     }

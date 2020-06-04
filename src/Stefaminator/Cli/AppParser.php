@@ -22,14 +22,14 @@ class AppParser {
 
                 $callable = $cmd->getCallable();
 
-                if($callable !== null) {
+                if ($callable !== null) {
                     $callable($cmd);
                     return;
                 }
 
                 $methodName = $cmd->getMethodName();
 
-                if(method_exists($app, $methodName)) {
+                if (method_exists($app, $methodName)) {
                     $app->$methodName($cmd);
                     return;
                 }
@@ -115,10 +115,10 @@ class AppParser {
 
         foreach ($params as $k => $v) {
             $opt = $specs->add($k, $v['description']);
-            if(array_key_exists('isa', $v)){
+            if (array_key_exists('isa', $v)) {
                 $opt->isa($v['isa']);
             }
-            if(array_key_exists('default', $v)){
+            if (array_key_exists('default', $v)) {
                 $opt->defaultValue($v['default']);
             }
         }

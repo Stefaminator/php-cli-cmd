@@ -53,7 +53,7 @@ class Cmd {
 
     public function __construct(string $cmd) {
         $this->cmd = $cmd;
-        if($cmd !== 'help') {
+        if ($cmd !== 'help') {
             $this->addSubCmd(
                 self::extend('help')
                     ->setCallable(static function(Cmd $cmd) {
@@ -86,7 +86,7 @@ class Cmd {
 
         try {
             $is_valid = $this->validateCallable($callable);
-            if($is_valid) {
+            if ($is_valid) {
                 $this->callable = $callable;
 
             }
@@ -113,7 +113,7 @@ class Cmd {
         $cmd = $this;
         $pwd = [];
 
-        while($cmd !== null) {
+        while ($cmd !== null) {
             $pwd[] = $cmd->parent !== null ? $cmd->cmd : 'cmd';
             $cmd = $cmd->parent;
         }
@@ -121,7 +121,7 @@ class Cmd {
         $pwd = array_reverse($pwd);
 
         $pwd_str = '';
-        foreach($pwd as $p) {
+        foreach ($pwd as $p) {
             $pwd_str .= ucfirst(strtolower($p));
         }
 
@@ -152,7 +152,7 @@ EOT;
 
         echo $eol;
 
-        if(!empty($this->params)) {
+        if (!empty($this->params)) {
 
             echo $eol;
             echo 'Parameters: ' . $eol;
@@ -182,19 +182,19 @@ EOT;
         $check = new ReflectionFunction($callable);
         $parameters = $check->getParameters();
 
-        if(count($parameters) !== 1) {
+        if (count($parameters) !== 1) {
             throw new RuntimeException('Invalid number of Parameters. Should be 1.');
         }
 
         $type = $parameters[0]->getType();
 
-        if($type === null) {
+        if ($type === null) {
             throw new RuntimeException('Named type of Parameter 1 should be "' . __CLASS__ . '".');
         }
 
         $tname = $type->getName();
 
-        if($tname !== __CLASS__) {
+        if ($tname !== __CLASS__) {
             throw new RuntimeException('Named type of Parameter 1 should be "' . __CLASS__ . '".');
         }
 
