@@ -44,10 +44,10 @@ class Progress {
 
         $disp = number_format($perc * 100);
 
-        $status_bar_percent = str_pad("$disp%", 5 , ' ', STR_PAD_LEFT);
+        $status_bar_percent = str_pad("$disp%", 5, ' ', STR_PAD_LEFT);
         $status_bar .= Color::getColoredString($status_bar_percent, Color::FOREGROUND_COLOR_GREEN);
 
-        $status_bar_done =  " $done/$total";
+        $status_bar_done = " $done/$total";
 
         $status_bar .= Color::getColoredString($status_bar_done, Color::FOREGROUND_COLOR_YELLOW);
 
