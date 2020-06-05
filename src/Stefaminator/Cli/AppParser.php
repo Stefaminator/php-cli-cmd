@@ -6,11 +6,9 @@ namespace Stefaminator\Cli;
 
 use Exception;
 use GetOptionKit\ContinuousOptionParser;
-use GetOptionKit\OptionCollection;
 use GetOptionKit\OptionResult;
 
 class AppParser {
-
 
     public static function run(App $app): void {
         global $argv;
@@ -41,8 +39,8 @@ class AppParser {
         } catch (Exception $e) {
 
             App::eol();
-
             App::echo('Uups, someting went wrong!', Color::FOREGROUND_COLOR_RED);
+            App::eol();
             App::echo($e->getMessage(), Color::FOREGROUND_COLOR_RED);
             App::eol();
         }
@@ -58,7 +56,7 @@ class AppParser {
 
         $cmd = $app->setup();
 
-        $appspecs = self::createOptionCollection($cmd);
+        $appspecs = $cmd->getOptionCollection();
 
         $parser = new ContinuousOptionParser($appspecs);
 
@@ -90,7 +88,7 @@ class AppParser {
 
                     if (!empty($cmd->optionSpecs)) {
 
-                        $specs = self::createOptionCollection($cmd);
+                        $specs = $cmd->getOptionCollection();
 
                         $parser->setSpecs($specs);
 
@@ -113,25 +111,6 @@ class AppParser {
         }
 
         return $cmd;
-    }
-
-    private static function createOptionCollection(Cmd $cmd): OptionCollection {
-
-        $specs = (array)$cmd->optionSpecs;
-
-        $collection = new OptionCollection();
-
-        foreach ($specs as $k => $v) {
-            $opt = $collection->add($k, $v['description']);
-            if (array_key_exists('isa', $v)) {
-                $opt->isa($v['isa']);
-            }
-            if (array_key_exists('default', $v)) {
-                $opt->defaultValue($v['default']);
-            }
-        }
-
-        return $collection;
     }
 
 

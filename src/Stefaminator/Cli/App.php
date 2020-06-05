@@ -8,8 +8,6 @@ abstract class App {
 
     public const EOL = "\n";
 
-    public const PADDING = "  ";
-
     /**
      * @return Cmd
      */
@@ -23,13 +21,15 @@ abstract class App {
 
         $lines = preg_split("/\r\n|\n|\r/", $str);
 
+        $output = [];
         foreach($lines as $line) {
-            if($foreground_color === null) {
-                echo self::PADDING . $line . self::EOL;
-            } else {
-                echo self::PADDING . Color::getColoredString($line, $foreground_color). self::EOL;
+            if($foreground_color !== null) {
+                $line = Color::getColoredString($line, $foreground_color);
             }
+            $output[] = $line;
         }
+
+        echo implode(self::EOL, $output);
     }
 
 

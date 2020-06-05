@@ -69,6 +69,10 @@ class Color {
     // Returns colored string
     public static function getColoredString($string, $foreground_color = null, $background_color = null): string {
 
+        if (empty($string)) {
+            return '';
+        }
+
         $colored_string = '';
 
         // Check if given foreground color found

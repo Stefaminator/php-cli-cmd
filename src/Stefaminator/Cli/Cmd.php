@@ -3,6 +3,7 @@
 namespace Stefaminator\Cli;
 
 use Exception;
+use GetOptionKit\OptionCollection;
 use GetOptionKit\OptionResult;
 use ReflectionFunction;
 use RuntimeException;
@@ -21,29 +22,39 @@ class Cmd {
     public $cmd;
 
     /**
+     * @var string
+     */
+    public $descr;
+
+    /**
      * @var array
      */
     public $optionSpecs;
 
     /**
-     * @var OptionResult
+     * @var OptionCollection
+     */
+    private $optionCollection;
+
+    /**
+     * @var OptionResult|null
      */
     public $optionResult;
-
-    /**
-     * @var string[]
-     */
-    public $arguments;
-
-    /**
-     * @var array
-     */
-    private $cmds = [];
 
     /**
      * @var Exception
      */
     public $optionParseException;
+
+    /**
+     * @var string[]
+     */
+    public $arguments = [];
+
+    /**
+     * @var Cmd[]
+     */
+    private $subcommands = [];
 
     /**
      * @var callable|null
@@ -56,6 +67,7 @@ class Cmd {
         if ($cmd !== 'help') {
             $this->addSubCmd(
                 self::extend('help')
+                    ->setDescription('Displays help for this command.')
                     ->setCallable(static function(Cmd $cmd) {
                         $cmd->parent->help();
                     })
@@ -64,16 +76,23 @@ class Cmd {
     }
 
     public function addOption(string $specString, array $config): self {
+
         $this->optionSpecs[$specString] = $config;
+
         return $this;
     }
 
     public function addSubCmd(Cmd $cmd): self {
 
-//        if (!array_key_exists($cmd->cmd, $this->cmds)) {
-            $cmd->parent = $this;
-            $this->cmds[$cmd->cmd] = $cmd;
-//        }
+        $cmd->parent = $this;
+        $this->subcommands[$cmd->cmd] = $cmd;
+
+        return $this;
+    }
+
+    public function setDescription(string $descr): self {
+
+        $this->descr = $descr;
 
         return $this;
     }
@@ -96,12 +115,12 @@ class Cmd {
     }
 
     public function existsSubCmd(string $cmd): bool {
-        return array_key_exists($cmd, $this->cmds);
+        return array_key_exists($cmd, $this->subcommands);
     }
 
     public function getSubCmd(string $cmd): ?Cmd {
         if ($this->existsSubCmd($cmd)) {
-            return $this->cmds[$cmd];
+            return $this->subcommands[$cmd];
         }
         return null;
     }
@@ -129,6 +148,30 @@ class Cmd {
         return $this->callable;
     }
 
+    public function getOptionCollection(): OptionCollection {
+
+        if($this->optionCollection !== null) {
+            return $this->optionCollection;
+        }
+
+        $specs = (array)$this->optionSpecs;
+
+        $collection = new OptionCollection();
+
+        foreach ($specs as $k => $v) {
+            $opt = $collection->add($k, $v['description']);
+            if (array_key_exists('isa', $v)) {
+                $opt->isa($v['isa']);
+            }
+            if (array_key_exists('default', $v)) {
+                $opt->defaultValue($v['default']);
+            }
+        }
+
+        $this->optionCollection = $collection;
+        return $this->optionCollection;
+    }
+
     public function handleOptionParseException(): void {
 
         if($this->optionParseException === null) {
@@ -137,7 +180,9 @@ class Cmd {
 
         App::eol();
         App::echo('Uups, something went wrong!', Color::FOREGROUND_COLOR_RED);
+        App::eol();
         App::echo($this->optionParseException->getMessage(), Color::FOREGROUND_COLOR_RED);
+        App::eol();
 
         $this->help();
 
@@ -153,7 +198,7 @@ class Cmd {
            ` /_\ '    
           - (o o) -   
 ----------ooO--(_)--Ooo----------
-            help?
+          Need help?
 ---------------------------------  
 EOT;
 
@@ -162,20 +207,76 @@ EOT;
 
         App::eol();
 
-        if (!empty($this->optionSpecs)) {
+        $oc = $this->getOptionCollection();
+        $has_options = !empty($oc->options);
+
+        $has_subcommands = !empty($this->subcommands);
+
+        App::eol();
+        App::echo('Usage: ', Color::FOREGROUND_COLOR_YELLOW);
+        App::eol();
+
+        App::echo(
+            '  ' .
+            ($this->parent !== null ? $this->cmd : 'command') .
+            ($has_options ? ' [options]' : '') .
+            ($has_subcommands ? ' [command]' : '')
+        );
+
+        App::eol();
+
+
+
+        if ($has_options) {
 
             App::eol();
-            App::echo('Options: ', Color::FOREGROUND_COLOR_GREEN);
+            App::echo('Options: ', Color::FOREGROUND_COLOR_YELLOW);
             App::eol();
 
-            foreach ($this->optionSpecs as $k => $v) {
+            foreach ($oc->options as $option) {
 
-                $line = '  ' . str_pad($k, 20, ' ');
-                $line .= ' ' . $v['description'] . App::EOL;
+                $s = '    ';
+                if(!empty($option->short)) {
+                    $s = '-' . $option->short . ', ';
+                }
+                $s .= '--' . $option->long;
 
-                App::echo($line, Color::FOREGROUND_COLOR_GREEN);
+                $s = '  ' . str_pad($s, 20, ' ');
+                App::echo($s, Color::FOREGROUND_COLOR_GREEN);
+
+                $s = ' ' . $option->desc;
+                App::echo($s);
+
+                if ($option->defaultValue) {
+                    $s = ' [default: ' . $option->defaultValue . ']';
+                    App::echo($s, Color::FOREGROUND_COLOR_YELLOW);
+                }
+
+                App::eol();
 
             }
+
+            App::eol();
+        }
+
+        if($has_subcommands) {
+
+            App::eol();
+            App::echo('Available commands: ', Color::FOREGROUND_COLOR_YELLOW);
+            App::eol();
+
+            foreach ($this->subcommands as $cmd) {
+
+                $s = '  ' . str_pad($cmd->cmd, 20, ' ');
+                App::echo($s, Color::FOREGROUND_COLOR_GREEN);
+
+                $s = ' ' . $cmd->descr;
+                App::echo($s);
+
+                App::eol();
+            }
+
+            App::eol();
         }
     }
 
@@ -208,6 +309,7 @@ EOT;
             throw new RuntimeException('Named type of Parameter 1 should be "' . __CLASS__ . '".');
         }
 
+        /** @noinspection PhpPossiblePolymorphicInvocationInspection */
         $tname = $type->getName();
 
         if ($tname !== __CLASS__) {

@@ -9,9 +9,9 @@ use Stefaminator\Cli\Cmd;
 use Stefaminator\Cli\Test\Resources\TestApp1;
 
 
-final class UnitTest extends TestCase {
+final class TestApp1Test extends TestCase {
 
-    public function testNoOptions(): void {
+    public function testMainNoOptionsNoArgs(): void {
         $app = new TestApp1();
 
         $argv = ['example2.php'];
@@ -24,10 +24,43 @@ final class UnitTest extends TestCase {
 
         $this->assertSame(0, $cmd->optionResult->count());
 
-        $this->assertNull($cmd->arguments);
+        $this->assertEmpty($cmd->arguments);
     }
 
-    public function testHelpFlag(): void {
+    public function testMainArguments(): void {
+        $app = new TestApp1();
+
+        $argv = ['example2.php', 'myarg'];
+
+        $cmd = AppParser::route($app, $argv);
+
+        $this->assertInstanceOf(Cmd::class, $cmd);
+
+        $this->assertSame('__root', $cmd->cmd);
+
+        $this->assertSame(0, $cmd->optionResult->count());
+
+        $this->assertSame(['myarg'], $cmd->arguments);
+    }
+
+
+    public function testMainOptionsAndArguments(): void {
+        $app = new TestApp1();
+
+        $argv = ['example2.php', '-h', 'myarg'];
+
+        $cmd = AppParser::route($app, $argv);
+
+        $this->assertInstanceOf(Cmd::class, $cmd);
+
+        $this->assertSame('__root', $cmd->cmd);
+
+        $this->assertTrue($cmd->optionResult->get('help'));
+
+        $this->assertSame(['myarg'], $cmd->arguments);
+    }
+
+    public function testMainHelpFlag(): void {
         $app = new TestApp1();
 
         $argv = ['example2.php', '--help'];
@@ -78,7 +111,7 @@ final class UnitTest extends TestCase {
 
         $this->assertSame('txt', $cmd->optionResult->get('format'));
 
-        $this->assertNull($cmd->arguments);
+        $this->assertEmpty($cmd->arguments);
 
         $this->assertSame('cmdList',$cmd->getMethodName());
     }
@@ -98,7 +131,7 @@ final class UnitTest extends TestCase {
 
         $this->assertSame('json', $cmd->optionResult->get('format'));
 
-        $this->assertNull($cmd->arguments);
+        $this->assertEmpty($cmd->arguments);
 
         $this->assertSame('cmdList',$cmd->getMethodName());
     }
@@ -118,7 +151,7 @@ final class UnitTest extends TestCase {
 
         $this->assertNull($cmd->optionResult->get('xml'));
 
-        $this->assertNull($cmd->arguments);
+        $this->assertEmpty($cmd->arguments);
 
         $this->assertInstanceOf(Exception::class, $cmd->optionParseException);
 
@@ -142,7 +175,7 @@ final class UnitTest extends TestCase {
 
         $this->assertSame('cmdShow',$cmd->getMethodName());
 
-        $this->assertNull($cmd->arguments);
+        $this->assertEmpty($cmd->arguments);
     }
 
     public function testShowStats(): void {
@@ -164,6 +197,6 @@ final class UnitTest extends TestCase {
 
         $this->assertSame('cmdShowStats',$cmd->getMethodName());
 
-        $this->assertNull($cmd->arguments);
+        $this->assertEmpty($cmd->arguments);
     }
 }
