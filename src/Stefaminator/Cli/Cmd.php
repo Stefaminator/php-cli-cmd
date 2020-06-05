@@ -114,12 +114,23 @@ class Cmd {
         return $this;
     }
 
-    public function existsSubCmd(string $cmd): bool {
+    public function hasSubCmd(string $cmd): bool {
         return array_key_exists($cmd, $this->subcommands);
     }
 
+    public function hasProvidedOption(string $key): bool {
+        return $this->optionResult !== null && $this->optionResult->has($key);
+    }
+
+    public function getProvidedOption(string $key) {
+        if($this->optionResult !== null) {
+            return $this->optionResult->get($key);
+        }
+        return null;
+    }
+
     public function getSubCmd(string $cmd): ?Cmd {
-        if ($this->existsSubCmd($cmd)) {
+        if ($this->hasSubCmd($cmd)) {
             return $this->subcommands[$cmd];
         }
         return null;
@@ -172,10 +183,10 @@ class Cmd {
         return $this->optionCollection;
     }
 
-    public function handleOptionParseException(): void {
+    public function handleOptionParseException(): bool {
 
         if($this->optionParseException === null) {
-            return;
+            return false;
         }
 
         App::eol();
@@ -186,7 +197,7 @@ class Cmd {
 
         $this->help();
 
-        exit();
+        return true;
     }
 
     public function help(): void {

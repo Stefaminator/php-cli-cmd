@@ -18,7 +18,9 @@ class AppParser {
 
             if ($cmd !== null) {
 
-                $cmd->handleOptionParseException();
+                if($cmd->handleOptionParseException()) {
+                    return;
+                }
 
                 $callable = $cmd->getCallable();
 
@@ -71,7 +73,7 @@ class AppParser {
 
             $currentArgument = $parser->getCurrentArgument();
 
-            if ($cmd->existsSubCmd($currentArgument)) {
+            if ($cmd->hasSubCmd($currentArgument)) {
 
                 $parser->advance();
 

@@ -23,13 +23,13 @@ AppParser::run(
                 ])
                 ->setCallable(static function (Cmd $cmd) {
 
-                    $name = $cmd->optionResult->get('name');
+                    $name = $cmd->getProvidedOption('name');
 
                     self::eol();
                     self::echo(sprintf('Hello %s', $name), Color::FOREGROUND_COLOR_YELLOW);
                     self::eol();
 
-                    if($cmd->optionResult->has('verbose')) {
+                    if($cmd->hasProvidedOption('verbose')) {
                         $keys = array_keys($cmd->optionResult->keys);
                         self::eol();
                         self::echo('--- VERBOSE OUTPUT ---' . APP::EOL, Color::FOREGROUND_COLOR_GREEN);
