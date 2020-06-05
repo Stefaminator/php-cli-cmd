@@ -58,12 +58,12 @@ class AppParser {
 
         $cmd = $app->setup();
 
-        $appspecs = self::createSpecs($cmd);
+        $appspecs = self::createOptionCollection($cmd);
 
         $parser = new ContinuousOptionParser($appspecs);
 
         try {
-            $cmd->options = $parser->parse($argv);
+            $cmd->optionResult = $parser->parse($argv);
         } catch (Exception $e) {
             $cmd->optionParseException = $e;
             return $cmd;
@@ -82,20 +82,20 @@ class AppParser {
 
             if ($cmd instanceof Cmd) {
 
-                $options_parsed = $cmd->options !== null;
+                $options_parsed = $cmd->optionResult !== null;
 
                 if (!$options_parsed) {
 
-                    $cmd->options = new OptionResult();
+                    $cmd->optionResult = new OptionResult();
 
-                    if (!empty($cmd->params)) {
+                    if (!empty($cmd->optionSpecs)) {
 
-                        $specs = self::createSpecs($cmd);
+                        $specs = self::createOptionCollection($cmd);
 
                         $parser->setSpecs($specs);
 
                         try {
-                            $cmd->options = $parser->continueParse();
+                            $cmd->optionResult = $parser->continueParse();
                         } catch (Exception $e) {
                             $cmd->optionParseException = $e;
                             return $cmd;
@@ -115,14 +115,14 @@ class AppParser {
         return $cmd;
     }
 
-    private static function createSpecs(Cmd $cmd): OptionCollection {
+    private static function createOptionCollection(Cmd $cmd): OptionCollection {
 
-        $params = (array)$cmd->params;
+        $specs = (array)$cmd->optionSpecs;
 
-        $specs = new OptionCollection();
+        $collection = new OptionCollection();
 
-        foreach ($params as $k => $v) {
-            $opt = $specs->add($k, $v['description']);
+        foreach ($specs as $k => $v) {
+            $opt = $collection->add($k, $v['description']);
             if (array_key_exists('isa', $v)) {
                 $opt->isa($v['isa']);
             }
@@ -131,7 +131,7 @@ class AppParser {
             }
         }
 
-        return $specs;
+        return $collection;
     }
 
 

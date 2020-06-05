@@ -23,12 +23,12 @@ class Cmd {
     /**
      * @var array
      */
-    public $params;
+    public $optionSpecs;
 
     /**
      * @var OptionResult
      */
-    public $options;
+    public $optionResult;
 
     /**
      * @var string[]
@@ -63,8 +63,8 @@ class Cmd {
         }
     }
 
-    public function addParam(string $specString, array $config): self {
-        $this->params[$specString] = $config;
+    public function addOption(string $specString, array $config): self {
+        $this->optionSpecs[$specString] = $config;
         return $this;
     }
 
@@ -162,13 +162,13 @@ EOT;
 
         App::eol();
 
-        if (!empty($this->params)) {
+        if (!empty($this->optionSpecs)) {
 
             App::eol();
-            App::echo('Parameters: ', Color::FOREGROUND_COLOR_GREEN);
+            App::echo('Options: ', Color::FOREGROUND_COLOR_GREEN);
             App::eol();
 
-            foreach ($this->params as $k => $v) {
+            foreach ($this->optionSpecs as $k => $v) {
 
                 $line = '  ' . str_pad($k, 20, ' ');
                 $line .= ' ' . $v['description'] . App::EOL;

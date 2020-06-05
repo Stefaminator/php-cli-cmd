@@ -53,7 +53,7 @@ If you execute that script from commandline you will see:
 Uhh, that was a lot of code for such a simple output and you may think: "I can do 
 the same with less code" - Yes, I believe you can!
 
-#### Ok, let's add some parameters
+#### Ok, let's add some options
 
     <?php
     
@@ -67,11 +67,11 @@ the same with less code" - Yes, I believe you can!
     
             public function setup(): Cmd {
                 return Cmd::root()
-                    ->addParam('v|verbose', [
+                    ->addOption('v|verbose', [
                         'description' => 'Flag to enable verbose output'
                     ])
-                    ->addParam('n|name:', [
-                        'description' => 'Name parameter. This param requires a value.',
+                    ->addOption('n|name:', [
+                        'description' => 'Name option. This option requires a value.',
                         'isa' => 'string',
                         'default' => 'World'
                     ])
@@ -86,7 +86,7 @@ the same with less code" - Yes, I believe you can!
                         if($cmd->options->has('verbose')) {
                             $keys = array_keys($cmd->options->keys);
                             self::eol();
-                            self::echo('All option params...', Color::FOREGROUND_COLOR_GREEN);
+                            self::echo('All current options...', Color::FOREGROUND_COLOR_GREEN);
                             foreach($keys as $k) {
                                 self::echo(self::PADDING . $k . ': ' . $cmd->options->get($k), Color::FOREGROUND_COLOR_GREEN);
                             }

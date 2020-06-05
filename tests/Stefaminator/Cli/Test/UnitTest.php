@@ -11,7 +11,7 @@ use Stefaminator\Cli\Test\Resources\TestApp1;
 
 final class UnitTest extends TestCase {
 
-    public function testNoParams(): void {
+    public function testNoOptions(): void {
         $app = new TestApp1();
 
         $argv = ['example2.php'];
@@ -22,7 +22,7 @@ final class UnitTest extends TestCase {
 
         $this->assertSame('__root', $cmd->cmd);
 
-        $this->assertSame(0, $cmd->options->count());
+        $this->assertSame(0, $cmd->optionResult->count());
 
         $this->assertNull($cmd->arguments);
     }
@@ -38,7 +38,7 @@ final class UnitTest extends TestCase {
 
         $this->assertSame('__root', $cmd->cmd);
 
-        $this->assertTrue($cmd->options->get('help'));
+        $this->assertTrue($cmd->optionResult->get('help'));
 
         $this->assertSame('cmd',$cmd->getMethodName());
     }
@@ -54,7 +54,7 @@ final class UnitTest extends TestCase {
 
         $this->assertSame('help', $cmd->cmd);
 
-        $this->assertSame(0, $cmd->options->count());
+        $this->assertSame(0, $cmd->optionResult->count());
 
         $this->assertSame(['list'], $cmd->arguments);
 
@@ -72,18 +72,18 @@ final class UnitTest extends TestCase {
 
         $this->assertSame('list', $cmd->cmd);
 
-        $this->assertSame(2, $cmd->options->count());
+        $this->assertSame(2, $cmd->optionResult->count());
 
-        $this->assertTrue($cmd->options->get('xml'));
+        $this->assertTrue($cmd->optionResult->get('xml'));
 
-        $this->assertSame('txt', $cmd->options->get('format'));
+        $this->assertSame('txt', $cmd->optionResult->get('format'));
 
         $this->assertNull($cmd->arguments);
 
         $this->assertSame('cmdList',$cmd->getMethodName());
     }
 
-    public function testListFormatParam(): void {
+    public function testListFormatOption(): void {
         $app = new TestApp1();
 
         $argv = ['example2.php', 'list', '--format', 'json'];
@@ -94,9 +94,9 @@ final class UnitTest extends TestCase {
 
         $this->assertSame('list', $cmd->cmd);
 
-        $this->assertSame(1, $cmd->options->count());
+        $this->assertSame(1, $cmd->optionResult->count());
 
-        $this->assertSame('json', $cmd->options->get('format'));
+        $this->assertSame('json', $cmd->optionResult->get('format'));
 
         $this->assertNull($cmd->arguments);
 
@@ -114,9 +114,9 @@ final class UnitTest extends TestCase {
 
         $this->assertSame('list', $cmd->cmd);
 
-        $this->assertSame(0, $cmd->options->count());
+        $this->assertSame(0, $cmd->optionResult->count());
 
-        $this->assertNull($cmd->options->get('xml'));
+        $this->assertNull($cmd->optionResult->get('xml'));
 
         $this->assertNull($cmd->arguments);
 
@@ -138,7 +138,7 @@ final class UnitTest extends TestCase {
 
         $this->assertSame('show', $cmd->cmd);
 
-        $this->assertSame(0, $cmd->options->count());
+        $this->assertSame(0, $cmd->optionResult->count());
 
         $this->assertSame('cmdShow',$cmd->getMethodName());
 
@@ -158,7 +158,7 @@ final class UnitTest extends TestCase {
 
         $this->assertSame('show', $cmd->parent->cmd);
 
-        $this->assertSame(1, $cmd->options->count());
+        $this->assertSame(1, $cmd->optionResult->count());
 
 //        $this->assertSame(\DateTime::createFromFormat('Y-m-d', '2019-01-01'), $cmd->options->get('start'));
 

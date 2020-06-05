@@ -13,28 +13,28 @@ AppParser::run(
 
         public function setup(): Cmd {
             return Cmd::root()
-                ->addParam('v|verbose', [
+                ->addOption('v|verbose', [
                     'description' => 'Flag to enable verbose output'
                 ])
-                ->addParam('n|name:', [
-                    'description' => 'Name parameter. This param requires a value.',
+                ->addOption('n|name:', [
+                    'description' => 'Name option. This option requires a value.',
                     'isa' => 'string',
                     'default' => 'World'
                 ])
                 ->setCallable(static function (Cmd $cmd) {
 
-                    $name = $cmd->options->get('name');
+                    $name = $cmd->optionResult->get('name');
 
                     self::eol();
                     self::echo(sprintf('Hello %s', $name), Color::FOREGROUND_COLOR_YELLOW);
                     self::eol();
 
-                    if($cmd->options->has('verbose')) {
-                        $keys = array_keys($cmd->options->keys);
+                    if($cmd->optionResult->has('verbose')) {
+                        $keys = array_keys($cmd->optionResult->keys);
                         self::eol();
-                        self::echo('All option params...', Color::FOREGROUND_COLOR_GREEN);
+                        self::echo('All current options...', Color::FOREGROUND_COLOR_GREEN);
                         foreach($keys as $k) {
-                            self::echo(self::PADDING . $k . ': ' . $cmd->options->get($k), Color::FOREGROUND_COLOR_GREEN);
+                            self::echo(self::PADDING . $k . ': ' . $cmd->optionResult->get($k), Color::FOREGROUND_COLOR_GREEN);
                         }
                         self::eol();
                     }

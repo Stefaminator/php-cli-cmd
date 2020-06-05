@@ -14,13 +14,13 @@ class TestApp1 extends App {
     public function setup(): Cmd {
 
         return Cmd::root()
-            ->addParam('h|help', ['description' => 'Display the command help'])
+            ->addOption('h|help', ['description' => 'Display the command help'])
             ->addSubCmd(
                 Cmd::extend('list')
-                    ->addParam('xml', [
+                    ->addOption('xml', [
                         'description' => 'To output list as XML'
                     ])
-                    ->addParam('f|format:', [
+                    ->addOption('f|format:', [
                         'description' => 'The output format (txt, xml, json, or md) [default: "txt"]',
                         'isa' => 'string',
                         'default' => 'txt'
@@ -33,7 +33,7 @@ class TestApp1 extends App {
                 Cmd::extend('show')
                     ->addSubCmd(
                         Cmd::extend('hello')
-                            ->addParam('name:', [
+                            ->addOption('name:', [
                                 'description' => 'The stats start date',
                                 'isa' => 'string',
                                 'required' => true
@@ -41,7 +41,7 @@ class TestApp1 extends App {
                     )
                     ->addSubCmd(
                         Cmd::extend('stats')
-                            ->addParam('start:', [
+                            ->addOption('start:', [
                                 'description' => 'The stats start date',
                                 'isa' => 'date',
                             ])
@@ -107,7 +107,7 @@ class TestApp1 extends App {
 
     public function cmdShowHello(Cmd $cmd): void {
 
-        $name = $cmd->options->get('name');
+        $name = $cmd->optionResult->get('name');
 
         self::eol();
 
