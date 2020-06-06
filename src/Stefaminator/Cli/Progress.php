@@ -59,14 +59,11 @@ class Progress {
 
     private static function getStatusbar(float $factor, int $size): string {
 
-        $bar = (int)floor($factor * $size);
+        $bar = (int)round($factor * $size);
 
         $status_bar_pb = str_repeat('█', $bar);
         if ($bar < $size) {
-            $status_bar_pb .= '█';
             $status_bar_pb .= str_repeat(' ', $size - $bar);
-        } else {
-            $status_bar_pb .= '█';
         }
 
         return $status_bar_pb;
@@ -74,11 +71,11 @@ class Progress {
 
     private static function getFactor(int $total, int $done): float {
 
-        return (double)(($total === 0) ? 1 : ($done / $total));
+        return (float)(($total === 0) ? 1 : ($done / $total));
     }
 
     private static function getRate(int $seconds, int $done): float {
 
-        return (double)(($done === 0) ? 0 : ($seconds / $done));
+        return (float)(($done === 0) ? 0 : ($seconds / $done));
     }
 }
