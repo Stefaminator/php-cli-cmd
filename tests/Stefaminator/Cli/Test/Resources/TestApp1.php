@@ -4,6 +4,7 @@
 namespace Stefaminator\Cli\Test\Resources;
 
 use Exception;
+use RuntimeException;
 use Stefaminator\Cli\App;
 use Stefaminator\Cli\Cmd;
 use Stefaminator\Cli\Color;
@@ -45,6 +46,12 @@ class TestApp1 extends App {
                                 'description' => 'The stats start date',
                                 'isa' => 'date',
                             ])
+                    )
+                    ->addSubCmd(
+                        Cmd::extend('exception')
+                            ->setCallable(static function(Cmd $cmd) {
+                                throw new RuntimeException('fail');
+                            })
                     )
             )
             ->addSubCmd(
@@ -107,7 +114,7 @@ class TestApp1 extends App {
 
     public function cmdShowHello(Cmd $cmd): void {
 
-        $name = $cmd->optionResult->get('name');
+        $name = $cmd->getProvidedOption('name');
 
         self::eol();
 
@@ -118,8 +125,13 @@ class TestApp1 extends App {
 
     public function cmdShowStats(Cmd $cmd) {
 
-        /** @noinspection ForgottenDebugOutputInspection */
-        var_dump($cmd);
+        $date = $cmd->getProvidedOption('start');
+
+        if($date !== null) {
+            echo $date['year'] . '-' . $date['month'] . '-' . $date['day'];
+        }
+
+//        echo var_dump($date);
     }
 
     public function cmdHelp(Cmd $cmd) {

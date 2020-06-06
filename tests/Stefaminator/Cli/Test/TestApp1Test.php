@@ -11,6 +11,37 @@ use Stefaminator\Cli\Test\Resources\TestApp1;
 
 final class TestApp1Test extends TestCase {
 
+    public function testParserShowStats(): void {
+        global $argv;
+
+        $argv = explode(' ', 'testapp1.php show stats --start=2020-11-11');
+
+        ob_start();
+        $app = new TestApp1();
+        AppParser::run($app);
+        $out = ob_get_clean();
+
+        $this->assertEquals('2020-11-11', $out);
+    }
+
+    public function testParserShowException(): void {
+        global $argv;
+
+        $argv = explode(' ', 'testapp1.php show exception');
+
+        ob_start();
+        $app = new TestApp1();
+        AppParser::run($app);
+        $out = ob_get_clean();
+
+        $expected = "
+\033[0;31mUups, someting went wrong!\033[0m
+\033[0;31mfail\033[0m
+";
+
+        $this->assertEquals($expected, $out);
+    }
+
     public function testMainNoOptionsNoArgs(): void {
         $app = new TestApp1();
 
@@ -18,11 +49,16 @@ final class TestApp1Test extends TestCase {
 
         $cmd = AppParser::parse($app, $argv);
 
-        $this->assertInstanceOf(Cmd::class, $cmd);
-
         $this->assertSame('__root', $cmd->cmd);
 
         $this->assertSame(0, $cmd->optionResult->count());
+
+        $this->assertNull($cmd->getProvidedOption('invalidoption'));
+        $this->assertFalse($cmd->hasProvidedOption('invalidoption'));
+
+
+        $this->assertNull($cmd->getProvidedOption('help'));
+        $this->assertFalse($cmd->hasProvidedOption('help'));
 
         $this->assertEmpty($cmd->arguments);
     }
