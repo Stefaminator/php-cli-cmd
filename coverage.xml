@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1591420096">
-  <project timestamp="1591420096">
+<coverage generated="1591420163">
+  <project timestamp="1591420163">
     <package name="Stefaminator\Cli">
       <file name="/var/concludis/php-cli-cmd/src/Stefaminator/Cli/App.php">
         <class name="Stefaminator\Cli\App" namespace="Stefaminator\Cli">
