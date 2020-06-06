@@ -54,7 +54,7 @@ class Cmd {
     /**
      * @var Cmd[]
      */
-    private $subcommands = [];
+    public $subcommands = [];
 
     /**
      * @var callable|null
@@ -201,94 +201,7 @@ class Cmd {
     }
 
     public function help(): void {
-
-
-        $help = <<<EOT
-
-              o       
-           ` /_\ '    
-          - (o o) -   
-----------ooO--(_)--Ooo----------
-          Need help?
----------------------------------  
-EOT;
-
-
-        App::echo($help, Color::FOREGROUND_COLOR_YELLOW);
-
-        App::eol();
-
-        $oc = $this->getOptionCollection();
-        $has_options = !empty($oc->options);
-
-        $has_subcommands = !empty($this->subcommands);
-
-        App::eol();
-        App::echo('Usage: ', Color::FOREGROUND_COLOR_YELLOW);
-        App::eol();
-
-        App::echo(
-            '  ' .
-            ($this->parent !== null ? $this->cmd : 'command') .
-            ($has_options ? ' [options]' : '') .
-            ($has_subcommands ? ' [command]' : '')
-        );
-
-        App::eol();
-
-
-
-        if ($has_options) {
-
-            App::eol();
-            App::echo('Options: ', Color::FOREGROUND_COLOR_YELLOW);
-            App::eol();
-
-            foreach ($oc->options as $option) {
-
-                $s = '    ';
-                if(!empty($option->short)) {
-                    $s = '-' . $option->short . ', ';
-                }
-                $s .= '--' . $option->long;
-
-                $s = '  ' . str_pad($s, 20, ' ');
-                App::echo($s, Color::FOREGROUND_COLOR_GREEN);
-
-                $s = ' ' . $option->desc;
-                App::echo($s);
-
-                if ($option->defaultValue) {
-                    $s = ' [default: ' . $option->defaultValue . ']';
-                    App::echo($s, Color::FOREGROUND_COLOR_YELLOW);
-                }
-
-                App::eol();
-
-            }
-
-            App::eol();
-        }
-
-        if($has_subcommands) {
-
-            App::eol();
-            App::echo('Available commands: ', Color::FOREGROUND_COLOR_YELLOW);
-            App::eol();
-
-            foreach ($this->subcommands as $cmd) {
-
-                $s = '  ' . str_pad($cmd->cmd, 20, ' ');
-                App::echo($s, Color::FOREGROUND_COLOR_GREEN);
-
-                $s = ' ' . $cmd->descr;
-                App::echo($s);
-
-                App::eol();
-            }
-
-            App::eol();
-        }
+        (new HelpRunner($this))->run();
     }
 
     public static function extend(string $cmd): Cmd {
