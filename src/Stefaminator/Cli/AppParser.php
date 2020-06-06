@@ -14,7 +14,7 @@ class AppParser {
         global $argv;
 
         try {
-            $cmd = self::route($app, $argv);
+            $cmd = self::parse($app, $argv);
 
             if ($cmd !== null) {
 
@@ -22,11 +22,11 @@ class AppParser {
                     return;
                 }
 
-                if(self::callCallable($cmd)) {
+                if (self::callCallable($cmd)) {
                     return;
                 }
 
-                if(self::callMethod($app, $cmd)) {
+                if (self::callMethod($app, $cmd)) {
                     return;
                 }
 
@@ -82,7 +82,7 @@ class AppParser {
      * @param array $argv
      * @return Cmd
      */
-    public static function route(App $app, array $argv): Cmd {
+    public static function parse(App $app, array $argv): Cmd {
 
         $cmd = $app->setup();
 
@@ -104,36 +104,17 @@ class AppParser {
 
             $currentArgument = $parser->getCurrentArgument();
 
-            $subcommand = null;
-            if ($cmd->hasSubCmd($currentArgument)) {
-                $_cmd = $cmd->getSubCmd($currentArgument);
+            $subcommand = self::getSubcommand($currentArgument, $cmd);
 
-                if($_cmd !== null) {
-                    $subcommand = $_cmd;
-                }
-            }
-
-            if($subcommand !== null) {
+            if ($subcommand !== null) {
 
                 $cmd = $subcommand;
-                $parser->advance();
 
-                $cmd->optionResult = new OptionResult();
-
-                if (!empty($cmd->optionSpecs)) {
-
-                    $specs = $cmd->getOptionCollection();
-
-                    $parser->setSpecs($specs);
-
-                    try {
-                        $cmd->optionResult = $parser->continueParse();
-                    } catch (Exception $e) {
-                        $cmd->optionParseException = $e;
-                        return $cmd;
-                    }
-
-                    continue;
+                try {
+                    self::parseSubcommand($parser, $cmd);
+                } catch (Exception $e) {
+                    $cmd->optionParseException = $e;
+                    return $cmd;
                 }
 
             } else {
@@ -142,6 +123,42 @@ class AppParser {
         }
 
         return $cmd;
+    }
+
+    /**
+     * @param string $argument
+     * @param Cmd $cmd
+     * @return Cmd|null
+     */
+    private static function getSubcommand(string $argument, Cmd $cmd): ?Cmd {
+
+        $subcommand = null;
+        if ($cmd->hasSubCmd($argument)) {
+            $subcommand = $cmd->getSubCmd($argument);
+        }
+
+        return $subcommand;
+    }
+
+    /**
+     * @param ContinuousOptionParser $parser
+     * @param Cmd $cmd
+     * @throws Exception
+     */
+    private static function parseSubcommand(ContinuousOptionParser $parser, Cmd $cmd): void {
+
+        $parser->advance();
+
+        $cmd->optionResult = new OptionResult();
+
+        if (!empty($cmd->optionSpecs)) {
+
+            $specs = $cmd->getOptionCollection();
+
+            $parser->setSpecs($specs);
+
+            $cmd->optionResult = $parser->continueParse();
+        }
     }
 
 

@@ -74,7 +74,7 @@ class Progress {
 
     private static function getFactor(int $total, int $done): float {
 
-        return (double)(($total === 0) ? 1: ($done / $total));
+        return (double)(($total === 0) ? 1 : ($done / $total));
     }
 
     private static function getRate(int $seconds, int $done): float {

@@ -16,7 +16,7 @@ final class TestApp1Test extends TestCase {
 
         $argv = ['example2.php'];
 
-        $cmd = AppParser::route($app, $argv);
+        $cmd = AppParser::parse($app, $argv);
 
         $this->assertInstanceOf(Cmd::class, $cmd);
 
@@ -32,7 +32,7 @@ final class TestApp1Test extends TestCase {
 
         $argv = ['example2.php', 'myarg'];
 
-        $cmd = AppParser::route($app, $argv);
+        $cmd = AppParser::parse($app, $argv);
 
         $this->assertInstanceOf(Cmd::class, $cmd);
 
@@ -49,7 +49,7 @@ final class TestApp1Test extends TestCase {
 
         $argv = ['example2.php', '-h', 'myarg'];
 
-        $cmd = AppParser::route($app, $argv);
+        $cmd = AppParser::parse($app, $argv);
 
         $this->assertInstanceOf(Cmd::class, $cmd);
 
@@ -65,7 +65,7 @@ final class TestApp1Test extends TestCase {
 
         $argv = ['example2.php', '--help'];
 
-        $cmd = AppParser::route($app, $argv);
+        $cmd = AppParser::parse($app, $argv);
 
         $this->assertInstanceOf(Cmd::class, $cmd);
 
@@ -81,7 +81,7 @@ final class TestApp1Test extends TestCase {
 
         $argv = ['example2.php', 'help', 'list'];
 
-        $cmd = AppParser::route($app, $argv);
+        $cmd = AppParser::parse($app, $argv);
 
         $this->assertInstanceOf(Cmd::class, $cmd);
 
@@ -99,7 +99,7 @@ final class TestApp1Test extends TestCase {
 
         $argv = ['example2.php', 'list', '--xml'];
 
-        $cmd = AppParser::route($app, $argv);
+        $cmd = AppParser::parse($app, $argv);
 
         $this->assertInstanceOf(Cmd::class, $cmd);
 
@@ -121,7 +121,7 @@ final class TestApp1Test extends TestCase {
 
         $argv = ['example2.php', 'list', '--format', 'json'];
 
-        $cmd = AppParser::route($app, $argv);
+        $cmd = AppParser::parse($app, $argv);
 
         $this->assertInstanceOf(Cmd::class, $cmd);
 
@@ -141,7 +141,7 @@ final class TestApp1Test extends TestCase {
 
         $argv = ['example2.php', 'list', '--invalid'];
 
-        $cmd = AppParser::route($app, $argv);
+        $cmd = AppParser::parse($app, $argv);
 
         $this->assertInstanceOf(Cmd::class, $cmd);
 
@@ -165,7 +165,7 @@ final class TestApp1Test extends TestCase {
 
         $argv = ['example2.php', 'show'];
 
-        $cmd = AppParser::route($app, $argv);
+        $cmd = AppParser::parse($app, $argv);
 
         $this->assertInstanceOf(Cmd::class, $cmd);
 
@@ -183,7 +183,7 @@ final class TestApp1Test extends TestCase {
 
         $argv = ['example2.php', 'show', 'stats', '--start', '2019-01-01'];
 
-        $cmd = AppParser::route($app, $argv);
+        $cmd = AppParser::parse($app, $argv);
 
         $this->assertInstanceOf(Cmd::class, $cmd);
 
