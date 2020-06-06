@@ -42,6 +42,41 @@ final class TestApp1Test extends TestCase {
         $this->assertEquals($expected, $out);
     }
 
+    public function testParserHelp(): void {
+        global $argv;
+
+        $argv = explode(' ', 'testapp1.php help');
+
+        ob_start();
+        $app = new TestApp1();
+        AppParser::run($app);
+        $out = ob_get_clean();
+
+        $expected = "
+\033[1;33m              o       \033[0m
+\033[1;33m           ` /_\ '    \033[0m
+\033[1;33m          - (o o) -   \033[0m
+\033[1;33m----------ooO--(_)--Ooo----------\033[0m
+\033[1;33m          Need help?\033[0m
+\033[1;33m---------------------------------  \033[0m
+
+\033[1;33mUsage: \033[0m
+  command [options] [command]
+
+\033[1;33mOptions: \033[0m
+\033[0;32m  -h, --help          \033[0m Display the command help
+
+
+\033[1;33mAvailable commands: \033[0m
+\033[0;32m  help                \033[0m Displays help for this command.
+\033[0;32m  list                \033[0m 
+\033[0;32m  show                \033[0m 
+
+";
+
+        $this->assertEquals($expected, $out);
+    }
+
     public function testMainNoOptionsNoArgs(): void {
         $app = new TestApp1();
 

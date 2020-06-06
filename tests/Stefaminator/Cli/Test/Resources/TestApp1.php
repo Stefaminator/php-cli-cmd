@@ -53,9 +53,6 @@ class TestApp1 extends App {
                                 throw new RuntimeException('fail');
                             })
                     )
-            )
-            ->addSubCmd(
-                Cmd::extend('help')
             );
     }
 
