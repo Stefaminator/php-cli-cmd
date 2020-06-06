@@ -35,8 +35,8 @@ final class TestApp1Test extends TestCase {
         $out = ob_get_clean();
 
         $expected = "
-\033[0;31mUups, someting went wrong!\033[0m
-\033[0;31mfail\033[0m
+\e[0;31mUups, someting went wrong!\e[0m
+\e[0;31mfail\e[0m
 ";
 
         $this->assertEquals($expected, $out);
@@ -53,24 +53,62 @@ final class TestApp1Test extends TestCase {
         $out = ob_get_clean();
 
         $expected = "
-\033[1;33m              o       \033[0m
-\033[1;33m           ` /_\ '    \033[0m
-\033[1;33m          - (o o) -   \033[0m
-\033[1;33m----------ooO--(_)--Ooo----------\033[0m
-\033[1;33m          Need help?\033[0m
-\033[1;33m---------------------------------  \033[0m
+\e[1;33m              o       \e[0m
+\e[1;33m           ` /_\ '    \e[0m
+\e[1;33m          - (o o) -   \e[0m
+\e[1;33m----------ooO--(_)--Ooo----------\e[0m
+\e[1;33m          Need help?\e[0m
+\e[1;33m---------------------------------  \e[0m
 
-\033[1;33mUsage: \033[0m
+\e[1;33mUsage: \e[0m
   command [options] [command]
 
-\033[1;33mOptions: \033[0m
-\033[0;32m  -h, --help          \033[0m Display the command help
+\e[1;33mOptions: \e[0m
+\e[0;32m  -h, --help          \e[0m Display the command help
 
 
-\033[1;33mAvailable commands: \033[0m
-\033[0;32m  help                \033[0m Displays help for this command.
-\033[0;32m  list                \033[0m 
-\033[0;32m  show                \033[0m 
+\e[1;33mAvailable commands: \e[0m
+\e[0;32m  help                \e[0m Displays help for this command.
+\e[0;32m  list                \e[0m 
+\e[0;32m  show                \e[0m 
+
+";
+
+        $this->assertEquals($expected, $out);
+    }
+
+    public function testParserInvalidOption(): void {
+        global $argv;
+
+        $argv = explode(' ', 'testapp1.php --invalid');
+
+        ob_start();
+        $app = new TestApp1();
+        AppParser::run($app);
+        $out = ob_get_clean();
+
+        $expected = "
+\e[0;31mUups, something went wrong!\e[0m
+\e[0;31mInvalid option: --invalid\e[0m
+
+\e[1;33m              o       \e[0m
+\e[1;33m           ` /_\ '    \e[0m
+\e[1;33m          - (o o) -   \e[0m
+\e[1;33m----------ooO--(_)--Ooo----------\e[0m
+\e[1;33m          Need help?\e[0m
+\e[1;33m---------------------------------  \e[0m
+
+\e[1;33mUsage: \e[0m
+  command [options] [command]
+
+\e[1;33mOptions: \e[0m
+\e[0;32m  -h, --help          \e[0m Display the command help
+
+
+\e[1;33mAvailable commands: \e[0m
+\e[0;32m  help                \e[0m Displays help for this command.
+\e[0;32m  list                \e[0m 
+\e[0;32m  show                \e[0m 
 
 ";
 

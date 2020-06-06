@@ -77,15 +77,15 @@ class Color {
 
         // Check if given foreground color found
         if ($foreground_color !== null && array_key_exists($foreground_color, self::getForegroundColors())) {
-            $colored_string .= "\033[" . $foreground_color . 'm';
+            $colored_string .= "\e[" . $foreground_color . 'm';
         }
         // Check if given background color found
         if ($background_color !== null && array_key_exists($background_color, self::getBackgroundColors())) {
-            $colored_string .= "\033[" . $background_color . 'm';
+            $colored_string .= "\e[" . $background_color . 'm';
         }
 
         // Add string and end coloring
-        $colored_string .= $string . "\033[0m";
+        $colored_string .= $string . "\e[0m";
 
         return $colored_string;
     }
@@ -94,24 +94,24 @@ class Color {
         echo self::getColoredString($string, $foreground_color, $background_color);
     }
 
-    public static function red($string): void {
-        echo self::getColoredString($string, self::FOREGROUND_COLOR_RED);
+    public static function red($string): string {
+        return self::getColoredString($string, self::FOREGROUND_COLOR_RED);
     }
 
-    public static function green($string): void {
-        echo self::getColoredString($string, self::FOREGROUND_COLOR_GREEN);
+    public static function green($string): string {
+        return self::getColoredString($string, self::FOREGROUND_COLOR_GREEN);
     }
 
-    public static function blue($string): void {
-        echo self::getColoredString($string, self::FOREGROUND_COLOR_BLUE);
+    public static function blue($string): string {
+        return self::getColoredString($string, self::FOREGROUND_COLOR_BLUE);
     }
 
-    public static function yellow($string): void {
-        echo self::getColoredString($string, self::FOREGROUND_COLOR_YELLOW);
+    public static function yellow($string): string {
+        return self::getColoredString($string, self::FOREGROUND_COLOR_YELLOW);
     }
 
-    public static function purple($string): void {
-        echo self::getColoredString($string, self::FOREGROUND_COLOR_PURPLE);
+    public static function purple($string): string {
+        return self::getColoredString($string, self::FOREGROUND_COLOR_PURPLE);
     }
 
 }

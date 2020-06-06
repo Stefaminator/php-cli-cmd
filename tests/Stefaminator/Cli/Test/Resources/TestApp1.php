@@ -71,7 +71,7 @@ class TestApp1 extends App {
 
         echo "\e[0;31;42mMerry Christmas!\e[0m\n";
 
-        Color::green('Merry X-Mas');
+        echo Color::green('Merry X-Mas');
 
         self::eol();
 
@@ -79,7 +79,7 @@ class TestApp1 extends App {
 
         self::eol();
 
-        Color::red('Merry X-Mas');
+        echo Color::red('Merry X-Mas');
 
         self::eol();
     }
