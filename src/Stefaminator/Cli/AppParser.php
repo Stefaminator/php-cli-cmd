@@ -18,7 +18,7 @@ class AppParser {
 
             if ($cmd !== null) {
 
-                if($cmd->handleOptionParseException()) {
+                if ($cmd->handleOptionParseException()) {
                     return;
                 }
 

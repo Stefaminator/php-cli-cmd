@@ -22,8 +22,8 @@ abstract class App {
         $lines = preg_split("/\r\n|\n|\r/", $str);
 
         $output = [];
-        foreach($lines as $line) {
-            if($foreground_color !== null) {
+        foreach ($lines as $line) {
+            if ($foreground_color !== null) {
                 $line = Color::getColoredString($line, $foreground_color);
             }
             $output[] = $line;

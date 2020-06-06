@@ -19,14 +19,14 @@ AppParser::run(
                 ->addSubCmd(
                     Cmd::extend('show')
                         ->setDescription('This command is used to show something. Take a look at the subcommands.')
-                        ->setCallable(static function(Cmd $cmd) {
+                        ->setCallable(static function (Cmd $cmd) {
                             error_reporting(E_ALL);
                             $cmd->help();
                         })
                         ->addSubCmd(
                             Cmd::extend('hello')
                                 ->setDescription('Displays hello world.')
-                                ->setCallable(static function(Cmd $cmd) {
+                                ->setCallable(static function (Cmd $cmd) {
                                     self::eol();
                                     self::echo('  Hello world!', Color::FOREGROUND_COLOR_CYAN);
                                     self::eol();
@@ -36,7 +36,7 @@ AppParser::run(
                         ->addSubCmd(
                             Cmd::extend('phpversion')
                                 ->setDescription('Displays the current php version of your cli.')
-                                ->setCallable(static function(Cmd $cmd) {
+                                ->setCallable(static function (Cmd $cmd) {
                                     self::eol();
                                     self::echo('  Your PHP version is:', Color::FOREGROUND_COLOR_YELLOW);
                                     self::eol();

@@ -68,7 +68,7 @@ class Cmd {
             $this->addSubCmd(
                 self::extend('help')
                     ->setDescription('Displays help for this command.')
-                    ->setCallable(static function(Cmd $cmd) {
+                    ->setCallable(static function (Cmd $cmd) {
                         $cmd->parent->help();
                     })
             );
@@ -123,7 +123,7 @@ class Cmd {
     }
 
     public function getProvidedOption(string $key) {
-        if($this->optionResult !== null) {
+        if ($this->optionResult !== null) {
             return $this->optionResult->get($key);
         }
         return null;
@@ -161,7 +161,7 @@ class Cmd {
 
     public function getOptionCollection(): OptionCollection {
 
-        if($this->optionCollection !== null) {
+        if ($this->optionCollection !== null) {
             return $this->optionCollection;
         }
 
@@ -185,7 +185,7 @@ class Cmd {
 
     public function handleOptionParseException(): bool {
 
-        if($this->optionParseException === null) {
+        if ($this->optionParseException === null) {
             return false;
         }
 
@@ -202,14 +202,6 @@ class Cmd {
 
     public function help(): void {
         (new HelpRunner($this))->run();
-    }
-
-    public static function extend(string $cmd): Cmd {
-        return new class($cmd) extends Cmd {};
-    }
-
-    public static function root(): Cmd {
-        return self::extend('__root');
     }
 
 
@@ -241,5 +233,14 @@ class Cmd {
         }
 
         return $callable;
+    }
+
+    public static function extend(string $cmd): Cmd {
+        return new class($cmd) extends Cmd {
+        };
+    }
+
+    public static function root(): Cmd {
+        return self::extend('__root');
     }
 }
