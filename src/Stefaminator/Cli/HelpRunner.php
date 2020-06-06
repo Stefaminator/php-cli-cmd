@@ -41,10 +41,7 @@ EOT;
         $oc = $cmd->getOptionCollection();
         $has_options = !empty($oc->options);
 
-        $arg_usage = [];
-        foreach ($cmd->argumentSpecs as $k => $v) {
-            $arg_usage[] = '[<' . $k . '>]' . (array_key_exists('multiple', $v) ? '...' : '');
-        }
+        $arg_usage = $this->getArgumentUsage();
 
         $has_subcommands = !empty($cmd->subcommands);
 
@@ -56,11 +53,23 @@ EOT;
             '  ' .
             ($cmd->parent !== null ? $cmd->cmd : 'command') .
             ($has_options ? ' [options]' : '') .
-            (!empty($arg_usage) ? ' ' . implode(' ', $arg_usage) : '') .
+            (!empty($arg_usage) ? ' ' . $arg_usage : '') .
             ($has_subcommands ? ' [command]' : '')
         );
 
         App::eol();
+    }
+
+    private function getArgumentUsage() {
+
+        $cmd = $this->cmd();
+
+        $arg_usage = [];
+        foreach ($cmd->argumentSpecs as $k => $v) {
+            $arg_usage[] = '[<' . $k . '>]' . (array_key_exists('multiple', $v) ? '...' : '');
+        }
+
+        return implode(' ', $arg_usage);
     }
 
     public function displayArguments(): void {
