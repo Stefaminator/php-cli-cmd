@@ -92,8 +92,11 @@ class AppParser {
 
         try {
             $cmd->optionResult = $parser->parse($argv);
+
         } catch (Exception $e) {
+
             $cmd->optionParseException = $e;
+
             return $cmd;
         }
 
