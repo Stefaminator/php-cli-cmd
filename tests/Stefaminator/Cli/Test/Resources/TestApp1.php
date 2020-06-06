@@ -53,6 +53,33 @@ class TestApp1 extends App {
                                 throw new RuntimeException('fail');
                             })
                     )
+            )
+            ->addSubCmd(
+                Cmd::extend('greetings')
+                    ->setDescription('Display some greetings.')
+                    ->addOption('c|colored', [
+                        'description' => 'Display the greetings colored.'
+                    ])
+                    ->addOption('h|help', [
+                        'description' => 'Displays help for this command.'
+                    ])
+                    ->addArgument('event', [
+                        'description' => 'The occasion of the greetings, may be xmas, easter, birthday or some custom event.'
+                    ])
+                    ->addArgument('names', [
+                        'description' => 'Multiple names of the greetings receivers.',
+                        'multiple' => true
+                    ])
+                    ->setCallable(function(Cmd $cmd) {
+                        $this->cmdGreetings($cmd);
+                    })
+            )
+            ->addSubCmd(
+                Cmd::extend('help')
+                    ->setDescription('Displays help for this command.')
+                    ->setCallable(static function (Cmd $cmd) {
+                        $cmd->parent->help();
+                    })
             );
     }
 
@@ -64,6 +91,16 @@ class TestApp1 extends App {
         echo "Main Command has been executed";
 
         self::eol();
+    }
+
+
+    public function cmdGreetings(Cmd $cmd): void {
+
+        if($cmd->hasProvidedOption('help')) {
+            $cmd->help();
+            return;
+        }
+
     }
 
     /** @noinspection PhpUnusedParameterInspection */

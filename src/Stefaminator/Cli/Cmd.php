@@ -29,7 +29,7 @@ class Cmd {
     /**
      * @var array
      */
-    public $optionSpecs;
+    public $optionSpecs = [];
 
     /**
      * @var OptionCollection
@@ -45,6 +45,11 @@ class Cmd {
      * @var Exception
      */
     public $optionParseException;
+
+    /**
+     * @var array
+     */
+    public $argumentSpecs = [];
 
     /**
      * @var string[]
@@ -64,20 +69,35 @@ class Cmd {
 
     public function __construct(string $cmd) {
         $this->cmd = $cmd;
-        if ($cmd !== 'help') {
-            $this->addSubCmd(
-                self::extend('help')
-                    ->setDescription('Displays help for this command.')
-                    ->setCallable(static function (Cmd $cmd) {
-                        $cmd->parent->help();
-                    })
-            );
-        }
+//        if ($cmd !== 'help') {
+//            $this->addSubCmd(
+//                self::extend('help')
+//                    ->setDescription('Displays help for this command.')
+//                    ->setCallable(static function (Cmd $cmd) {
+//                        $cmd->parent->help();
+//                    })
+//            );
+//        }
     }
 
     public function addOption(string $specString, array $config): self {
 
         $this->optionSpecs[$specString] = $config;
+
+        return $this;
+    }
+
+    public function addArgument(string $specString, array $config): self {
+
+        foreach ($this->argumentSpecs as $k => $v) {
+            if (array_key_exists('multiple', $v)) {
+                unset($this->argumentSpecs[$k]['multiple']);
+            }
+        }
+
+        $config['index'] = count($this->argumentSpecs);
+
+        $this->argumentSpecs[$specString] = $config;
 
         return $this;
     }

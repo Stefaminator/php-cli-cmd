@@ -12,7 +12,7 @@ AppParser::run(
 
         public function setup(): Cmd {
             return Cmd::root()
-                ->setCallable(static function (Cmd $cmd) {
+                ->setCallable(static function(Cmd $cmd) {
                     echo 'Hello World' . self::EOL;
                 });
         }

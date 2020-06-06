@@ -21,7 +21,7 @@ AppParser::run(
                     'isa' => 'string',
                     'default' => 'World'
                 ])
-                ->setCallable(static function (Cmd $cmd) {
+                ->setCallable(static function(Cmd $cmd) {
 
                     $name = $cmd->getProvidedOption('name');
 

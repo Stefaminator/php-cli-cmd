@@ -6,18 +6,7 @@ namespace Stefaminator\Cli;
 
 class HelpRunner extends CmdRunner {
 
-
-    public function run(): void {
-        $this->displayHeader();
-        $this->displayUsage();
-        $this->displayOptions();
-        $this->displaySubcommands();
-    }
-
-    public function displayHeader(): void {
-
-
-        $help = <<<EOT
+    public static $header = <<<EOT
 
               o       
            ` /_\ '    
@@ -26,6 +15,19 @@ class HelpRunner extends CmdRunner {
           Need help?
 ---------------------------------  
 EOT;
+
+
+    public function run(): void {
+        $this->displayHeader();
+        $this->displayUsage();
+        $this->displayArguments();
+        $this->displayOptions();
+        $this->displaySubcommands();
+    }
+
+    public function displayHeader(): void {
+
+        $help = self::$header;
 
         App::echo($help, Color::FOREGROUND_COLOR_YELLOW);
 
@@ -39,6 +41,11 @@ EOT;
         $oc = $cmd->getOptionCollection();
         $has_options = !empty($oc->options);
 
+        $arg_usage = [];
+        foreach ($cmd->argumentSpecs as $k => $v) {
+            $arg_usage[] = '[<' . $k . '>]' . (array_key_exists('multiple', $v) ? '...' : '');
+        }
+
         $has_subcommands = !empty($cmd->subcommands);
 
         App::eol();
@@ -49,10 +56,41 @@ EOT;
             '  ' .
             ($cmd->parent !== null ? $cmd->cmd : 'command') .
             ($has_options ? ' [options]' : '') .
+            (!empty($arg_usage) ? ' ' . implode(' ', $arg_usage) : '') .
             ($has_subcommands ? ' [command]' : '')
         );
 
         App::eol();
+    }
+
+    public function displayArguments(): void {
+
+        $cmd = $this->cmd();
+
+        $has_arguments = !empty($cmd->argumentSpecs);
+
+        if ($has_arguments) {
+
+            App::eol();
+            App::echo('Arguments: ', Color::FOREGROUND_COLOR_YELLOW);
+            App::eol();
+
+            foreach ($cmd->argumentSpecs as $argumentSpec => $config) {
+
+                $s = $argumentSpec;
+                $s = '  ' . str_pad($s, 20, ' ');
+                App::echo($s, Color::FOREGROUND_COLOR_GREEN);
+
+                $s = ' ' . (array_key_exists('description', $config) ? $config['description'] : '');
+                App::echo($s);
+
+                App::eol();
+            }
+
+            App::eol();
+
+        }
+
     }
 
     public function displayOptions(): void {
@@ -71,7 +109,7 @@ EOT;
             foreach ($oc->options as $option) {
 
                 $s = '    ';
-                if(!empty($option->short)) {
+                if (!empty($option->short)) {
                     $s = '-' . $option->short . ', ';
                 }
                 $s .= '--' . $option->long;
@@ -101,7 +139,7 @@ EOT;
 
         $has_subcommands = !empty($cmd->subcommands);
 
-        if($has_subcommands) {
+        if ($has_subcommands) {
 
             App::eol();
             App::echo('Available commands: ', Color::FOREGROUND_COLOR_YELLOW);

@@ -13,13 +13,13 @@ AppParser::run(
 
         public function setup(): Cmd {
             return Cmd::root()
-                ->setCallable(static function (Cmd $cmd) {
+                ->setCallable(static function(Cmd $cmd) {
                     $cmd->help();
                 })
                 ->addSubCmd(
                     Cmd::extend('show')
                         ->setDescription('This command is used to show something. Take a look at the subcommands.')
-                        ->setCallable(static function (Cmd $cmd) {
+                        ->setCallable(static function(Cmd $cmd) {
                             error_reporting(E_ALL);
                             $cmd->help();
                         })
@@ -31,7 +31,7 @@ AppParser::run(
                                     'isa' => 'string',
                                     'default' => 'World'
                                 ])
-                                ->setCallable(static function (Cmd $cmd) {
+                                ->setCallable(static function(Cmd $cmd) {
 
 
                                     $name = $cmd->getProvidedOption('name');
@@ -45,7 +45,7 @@ AppParser::run(
                         ->addSubCmd(
                             Cmd::extend('phpversion')
                                 ->setDescription('Displays the current php version of your cli.')
-                                ->setCallable(static function (Cmd $cmd) {
+                                ->setCallable(static function(Cmd $cmd) {
                                     self::eol();
                                     self::echo('  Your PHP version is:', Color::FOREGROUND_COLOR_YELLOW);
                                     self::eol();

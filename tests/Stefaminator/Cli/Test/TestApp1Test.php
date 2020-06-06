@@ -42,7 +42,7 @@ final class TestApp1Test extends TestCase {
         $this->assertEquals($expected, $out);
     }
 
-    public function testParserHelp(): void {
+    public function testParserHelpCommand(): void {
         global $argv;
 
         $argv = explode(' ', 'testapp1.php help');
@@ -68,9 +68,45 @@ final class TestApp1Test extends TestCase {
 
 
 \e[1;33mAvailable commands: \e[0m
-\e[0;32m  help                \e[0m Displays help for this command.
 \e[0;32m  list                \e[0m 
 \e[0;32m  show                \e[0m 
+\e[0;32m  greetings           \e[0m Display some greetings.
+\e[0;32m  help                \e[0m Displays help for this command.
+
+";
+
+        $this->assertEquals($expected, $out);
+    }
+
+    public function testParserGreetingsHelpOption(): void {
+        global $argv;
+
+        $argv = explode(' ', 'testapp1.php greetings --help');
+
+        ob_start();
+        $app = new TestApp1();
+        AppParser::run($app);
+        $out = ob_get_clean();
+
+        $expected = "
+\e[1;33m              o       \e[0m
+\e[1;33m           ` /_\ '    \e[0m
+\e[1;33m          - (o o) -   \e[0m
+\e[1;33m----------ooO--(_)--Ooo----------\e[0m
+\e[1;33m          Need help?\e[0m
+\e[1;33m---------------------------------  \e[0m
+
+\e[1;33mUsage: \e[0m
+  greetings [options] [<event>] [<names>]...
+
+\e[1;33mArguments: \e[0m
+\e[0;32m  event               \e[0m The occasion of the greetings, may be xmas, easter, birthday or some custom event.
+\e[0;32m  names               \e[0m Multiple names of the greetings receivers.
+
+
+\e[1;33mOptions: \e[0m
+\e[0;32m  -c, --colored       \e[0m Display the greetings colored.
+\e[0;32m  -h, --help          \e[0m Displays help for this command.
 
 ";
 
@@ -106,9 +142,10 @@ final class TestApp1Test extends TestCase {
 
 
 \e[1;33mAvailable commands: \e[0m
-\e[0;32m  help                \e[0m Displays help for this command.
 \e[0;32m  list                \e[0m 
 \e[0;32m  show                \e[0m 
+\e[0;32m  greetings           \e[0m Display some greetings.
+\e[0;32m  help                \e[0m Displays help for this command.
 
 ";
 
