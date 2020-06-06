@@ -28,10 +28,10 @@ AppParser::run(
                     self::eol();
                     self::echo(sprintf('Hello %s', $name), Color::FOREGROUND_COLOR_YELLOW);
                     self::eol();
+                    self::eol();
 
                     if ($cmd->hasProvidedOption('verbose')) {
                         $keys = array_keys($cmd->optionResult->keys);
-                        self::eol();
                         self::echo('--- VERBOSE OUTPUT ---' . APP::EOL, Color::FOREGROUND_COLOR_GREEN);
                         self::eol();
                         self::echo('  All current options...' . APP::EOL, Color::FOREGROUND_COLOR_GREEN);
@@ -43,8 +43,10 @@ AppParser::run(
                         self::echo('  All current arguments...' . APP::EOL, Color::FOREGROUND_COLOR_GREEN);
                         $args = $cmd->arguments;
                         foreach ($args as $a) {
-                            self::echo('    ' . $a . APP::EOL, Color::FOREGROUND_COLOR_GREEN);
+                            self::echo('    ' . $a, Color::FOREGROUND_COLOR_GREEN);
+                            self::eol();
                         }
+                        self::eol();
 
                     }
 

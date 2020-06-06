@@ -22,20 +22,13 @@ class AppParser {
                     return;
                 }
 
-                $callable = $cmd->getCallable();
-
-                if ($callable !== null) {
-                    $callable($cmd);
+                if(self::callCallable($cmd)) {
                     return;
                 }
 
-                $methodName = $cmd->getMethodName();
-
-                if (method_exists($app, $methodName)) {
-                    $app->$methodName($cmd);
+                if(self::callMethod($app, $cmd)) {
                     return;
                 }
-
 
             }
         } catch (Exception $e) {
@@ -50,11 +43,46 @@ class AppParser {
     }
 
     /**
+     * @param Cmd $cmd
+     * @return bool
+     * @throws Exception
+     */
+    private static function callCallable(Cmd $cmd): bool {
+
+        $callable = $cmd->getCallable();
+
+        if ($callable !== null) {
+            $callable($cmd);
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * @param App $app
+     * @param Cmd $cmd
+     * @return bool
+     * @throws Exception
+     */
+    private static function callMethod(App $app, Cmd $cmd): bool {
+
+        $methodName = $cmd->getMethodName();
+
+        if (method_exists($app, $methodName)) {
+            $app->$methodName($cmd);
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
      * @param App $app
      * @param array $argv
-     * @return Cmd|null
+     * @return Cmd
      */
-    public static function route(App $app, array $argv): ?Cmd {
+    public static function route(App $app, array $argv): Cmd {
 
         $cmd = $app->setup();
 
@@ -73,43 +101,41 @@ class AppParser {
 
             $currentArgument = $parser->getCurrentArgument();
 
+            $subcommand = null;
             if ($cmd->hasSubCmd($currentArgument)) {
+                $_cmd = $cmd->getSubCmd($currentArgument);
 
+                if($_cmd !== null) {
+                    $subcommand = $_cmd;
+                }
+            }
+
+            if($subcommand !== null) {
+
+                $cmd = $subcommand;
                 $parser->advance();
 
-                $cmd = $cmd->getSubCmd($currentArgument);
-            }
+                $cmd->optionResult = new OptionResult();
 
-            if ($cmd instanceof Cmd) {
+                if (!empty($cmd->optionSpecs)) {
 
-                $options_parsed = $cmd->optionResult !== null;
+                    $specs = $cmd->getOptionCollection();
 
-                if (!$options_parsed) {
+                    $parser->setSpecs($specs);
 
-                    $cmd->optionResult = new OptionResult();
-
-                    if (!empty($cmd->optionSpecs)) {
-
-                        $specs = $cmd->getOptionCollection();
-
-                        $parser->setSpecs($specs);
-
-                        try {
-                            $cmd->optionResult = $parser->continueParse();
-                        } catch (Exception $e) {
-                            $cmd->optionParseException = $e;
-                            return $cmd;
-                        }
-
-                        continue;
+                    try {
+                        $cmd->optionResult = $parser->continueParse();
+                    } catch (Exception $e) {
+                        $cmd->optionParseException = $e;
+                        return $cmd;
                     }
+
+                    continue;
                 }
 
-                if ($options_parsed) {
-                    $cmd->arguments[] = $parser->advance();
-                }
+            } else {
+                $cmd->arguments[] = $parser->advance();
             }
-
         }
 
         return $cmd;

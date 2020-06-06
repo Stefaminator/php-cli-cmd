@@ -26,9 +26,18 @@ AppParser::run(
                         ->addSubCmd(
                             Cmd::extend('hello')
                                 ->setDescription('Displays hello world.')
+                                ->addOption('name:', [
+                                    'description' => 'Name option. This option requires a value.',
+                                    'isa' => 'string',
+                                    'default' => 'World'
+                                ])
                                 ->setCallable(static function (Cmd $cmd) {
+
+
+                                    $name = $cmd->getProvidedOption('name');
+
                                     self::eol();
-                                    self::echo('  Hello world!', Color::FOREGROUND_COLOR_CYAN);
+                                    self::echo(sprintf('Hello %s!', $name), Color::FOREGROUND_COLOR_CYAN);
                                     self::eol();
                                     self::eol();
                                 })
