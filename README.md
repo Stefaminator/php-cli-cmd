@@ -63,8 +63,11 @@ and one name option that requires a value (`--name=Stefaminator`).
 
 - Spec for **help** option: `h|help` 
 - Spec for **verbose** option: `v|verbose` 
-- Spec for **name** option: `name:` 
-
+- Spec for **name** option: `name:`
+ 
+When providing the help flag our cmd callback will output the builtin help. 
+When providing the verbose flag it outputs all provided options and arguments.
+The name option is used for output the `Hello %s` message.
 
     <?php
     
