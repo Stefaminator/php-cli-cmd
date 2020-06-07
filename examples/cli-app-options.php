@@ -13,15 +13,27 @@ AppParser::run(
 
         public function setup(): Cmd {
             return Cmd::root()
-                ->addOption('v|verbose', [
-                    'description' => 'Flag to enable verbose output'
+
+                ->addOption('h|help', [
+                    'description' => 'Displays the command help.'
                 ])
+
+                ->addOption('v|verbose', [
+                    'description' => 'Flag to enable verbose output.'
+                ])
+
                 ->addOption('name:', [
                     'description' => 'Name option. This option requires a value.',
                     'isa' => 'string',
                     'default' => 'World'
                 ])
+
                 ->setCallable(static function(Cmd $cmd) {
+
+                    if ($cmd->hasProvidedOption('help')) {
+                        $cmd->help();
+                        return;
+                    }
 
                     $name = $cmd->getProvidedOption('name');
 
@@ -31,17 +43,22 @@ AppParser::run(
                     self::eol();
 
                     if ($cmd->hasProvidedOption('verbose')) {
-                        $keys = array_keys($cmd->optionResult->keys);
+
                         self::echo('--- VERBOSE OUTPUT ---' . APP::EOL, Color::FOREGROUND_COLOR_GREEN);
                         self::eol();
+
                         self::echo('  All current options...' . APP::EOL, Color::FOREGROUND_COLOR_GREEN);
-                        foreach ($keys as $k) {
-                            self::echo('    ' . $k . ': ' . $cmd->optionResult->get($k) . APP::EOL, Color::FOREGROUND_COLOR_GREEN);
+
+                        $pOptions = $cmd->getAllProvidedOptions();
+                        foreach ($pOptions as $k => $v) {
+                            self::echo('    ' . $k . ': ' . $v, Color::FOREGROUND_COLOR_GREEN);
+                            self::eol();
                         }
                         self::eol();
 
                         self::echo('  All current arguments...' . APP::EOL, Color::FOREGROUND_COLOR_GREEN);
-                        $args = $cmd->arguments;
+
+                        $args = $cmd->getAllProvidedArguments();
                         foreach ($args as $a) {
                             self::echo('    ' . $a, Color::FOREGROUND_COLOR_GREEN);
                             self::eol();

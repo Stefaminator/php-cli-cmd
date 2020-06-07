@@ -17,7 +17,7 @@ abstract class App {
         echo self::EOL;
     }
 
-    public static function echo(string $str, ?string $foreground_color = null): void {
+    public static function echo(string $str, ?string $foreground_color = null) : void {
 
         $lines = preg_split("/\r\n|\n|\r/", $str);
 

@@ -149,6 +149,21 @@ class Cmd {
         return null;
     }
 
+    public function getAllProvidedOptions(): array {
+        $r = [];
+        if ($this->optionResult !== null) {
+            $keys = array_keys($this->optionResult->keys);
+            foreach($keys as $key) {
+                $r[$key] = $this->getProvidedOption($key);
+            }
+        }
+        return $r;
+    }
+
+    public function getAllProvidedArguments(): array {
+        return $this->arguments;
+    }
+
     public function getSubCmd(string $cmd): ?Cmd {
         if ($this->hasSubCmd($cmd)) {
             return $this->subcommands[$cmd];
