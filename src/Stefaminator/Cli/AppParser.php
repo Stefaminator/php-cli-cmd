@@ -22,24 +22,34 @@ class AppParser {
                     return;
                 }
 
-                if (self::callCallable($cmd)) {
-                    return;
-                }
-
-                if (self::callMethod($app, $cmd)) {
-                    return;
-                }
+                self::callStack($app, $cmd);
 
             }
         } catch (Exception $e) {
 
-            App::eol();
-            App::echo('Uups, someting went wrong!', Color::FOREGROUND_COLOR_RED);
-            App::eol();
-            App::echo($e->getMessage(), Color::FOREGROUND_COLOR_RED);
-            App::eol();
+            CmdRunner::eol();
+            CmdRunner::echo('Uups, someting went wrong!', Color::FOREGROUND_COLOR_RED);
+            CmdRunner::eol();
+            CmdRunner::echo($e->getMessage(), Color::FOREGROUND_COLOR_RED);
+            CmdRunner::eol();
         }
 
+    }
+
+    /**
+     * @param App $app
+     * @param Cmd $cmd
+     * @throws Exception
+     */
+    private static function callStack(App $app, Cmd $cmd): void {
+
+        if (self::callRunner($cmd)) {
+            return;
+        }
+
+        if (self::callMethod($app, $cmd)) {
+            return;
+        }
     }
 
     /**
@@ -47,17 +57,18 @@ class AppParser {
      * @return bool
      * @throws Exception
      */
-    private static function callCallable(Cmd $cmd): bool {
+    private static function callRunner(Cmd $cmd): bool {
 
-        $callable = $cmd->getCallable();
+        $runner = $cmd->getRunner();
 
-        if ($callable !== null) {
-            $callable($cmd);
+        if($runner !== null) {
+            $runner->run();
             return true;
         }
 
         return false;
     }
+
 
     /**
      * @param App $app

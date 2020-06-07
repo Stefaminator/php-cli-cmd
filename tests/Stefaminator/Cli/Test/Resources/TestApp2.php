@@ -6,6 +6,7 @@ namespace Stefaminator\Cli\Test\Resources;
 
 use Stefaminator\Cli\App;
 use Stefaminator\Cli\Cmd;
+use Stefaminator\Cli\CmdRunner;
 
 class TestApp2 extends App {
 
@@ -22,7 +23,12 @@ class TestApp2 extends App {
                 'isa' => 'string',
                 'default' => 'World'
             ])
-            ->setCallable(static function (Cmd $cmd) {
-            });
+            ->setRunner(
+                (new class extends CmdRunner {
+
+                    public function run(): void {
+                    }
+                })
+            );
     }
 }

@@ -20,31 +20,37 @@ The simplest way of installing ist to refer to the sources on packagist.
 Let's start by creating a new php file called `my-first-cli-app.php` and require composers autoloader.
 
 Create a custom class by extending `Stefaminator\Cli\App` and implement the required `setup` method 
-which must return an instance of `Stefaminator\Cli\Cmd`. In the following example a root `Cmd` object is
-created and a static callable is assigned for that command. 
+which must return an instance of `Stefaminator\Cli\Cmd`. In the following example we created a root `Cmd` 
+ and assigned a `CmdRunner` for that root command. 
 
-Finally pass your custom app class to `Stefaminator\Cli\AppParser::run()` and feel the magic.
+Finally, pass your custom app class to `Stefaminator\Cli\AppParser::run()` and feel the magic.
 
 (You can will this example here: [examples/cli-app-helloworld.php](./examples/cli-app-helloworld.php))
 
     <?php
     
     /** Please do not forget to require composers autoloader here */
-    
+
     use Stefaminator\Cli\App;
     use Stefaminator\Cli\AppParser;
     use Stefaminator\Cli\Cmd;
+    use Stefaminator\Cli\CmdRunner;
     
     AppParser::run(
-        (new class extends App {    
-        
+        (new class extends App {
+    
             public function setup(): Cmd {
                 return Cmd::root()
-                    ->setCallable(static function (Cmd $cmd) {
-                        echo 'Hello World' . self::EOL;
-                    });
-            }    
-            
+                    ->setRunner(
+                        (new class extends CmdRunner {
+                            public function run(): void {
+                                echo "Hello World";
+                                echo "\n";
+                            }
+                        })
+                    );
+            }
+    
         })
     );
 
@@ -95,47 +101,57 @@ The name option is used for output the `Hello %s` message.
                         'isa' => 'string',
                         'default' => 'World'
                     ])
+                    
+                    ->setRunner(
+                        (new class extends CmdRunner {
     
-                    ->setCallable(static function(Cmd $cmd) {
+                            public function run(): void {
     
-                        if ($cmd->hasProvidedOption('help')) {
-                            $cmd->help();
-                            return;
-                        }
+                                $cmd = $this->getCmd();
     
-                        $name = $cmd->getProvidedOption('name');
+                                if ($cmd->hasProvidedOption('help')) {
+                                    $cmd->help();
+                                    return;
+                                }
     
-                        self::eol();
-                        self::echo(sprintf('Hello %s', $name), Color::FOREGROUND_COLOR_YELLOW);
-                        self::eol();
-                        self::eol();
+                                $name = $cmd->getProvidedOption('name');
     
-                        if ($cmd->hasProvidedOption('verbose')) {
-    
-                            self::echo('--- VERBOSE OUTPUT ---' . APP::EOL, Color::FOREGROUND_COLOR_GREEN);
-                            self::eol();
-    
-                            self::echo('  All current options...' . APP::EOL, Color::FOREGROUND_COLOR_GREEN);
-    
-                            $pOptions = $cmd->getAllProvidedOptions();
-                            foreach ($pOptions as $k => $v) {
-                                self::echo('    ' . $k . ': ' . $v, Color::FOREGROUND_COLOR_GREEN);
                                 self::eol();
-                            }
-                            self::eol();
-    
-                            self::echo('  All current arguments...' . APP::EOL, Color::FOREGROUND_COLOR_GREEN);
-    
-                            $args = $cmd->getAllProvidedArguments();
-                            foreach ($args as $a) {
-                                self::echo('    ' . $a, Color::FOREGROUND_COLOR_GREEN);
+                                self::echo(sprintf('Hello %s', $name), Color::FOREGROUND_COLOR_YELLOW);
                                 self::eol();
+                                self::eol();
+    
+                                if ($cmd->hasProvidedOption('verbose')) {
+    
+                                    self::echo('--- VERBOSE OUTPUT ---', Color::FOREGROUND_COLOR_GREEN);
+                                    self::eol();
+                                    self::eol();
+    
+                                    self::echo('  All current options...', Color::FOREGROUND_COLOR_GREEN);
+                                    self::eol();
+    
+                                    $pOptions = $cmd->getAllProvidedOptions();
+                                    foreach ($pOptions as $k => $v) {
+                                        self::echo('    ' . $k . ': ' . $v, Color::FOREGROUND_COLOR_GREEN);
+                                        self::eol();
+                                    }
+                                    self::eol();
+    
+                                    self::echo('  All current arguments...', Color::FOREGROUND_COLOR_GREEN);
+                                    self::eol();
+    
+                                    $args = $cmd->getAllProvidedArguments();
+                                    foreach ($args as $a) {
+                                        self::echo('    ' . $a, Color::FOREGROUND_COLOR_GREEN);
+                                        self::eol();
+                                    }
+                                    self::eol();
+    
+                                }
+    
                             }
-                            self::eol();
-    
-                        }
-    
-                    });
+                        })
+                    );
             }
     
         })

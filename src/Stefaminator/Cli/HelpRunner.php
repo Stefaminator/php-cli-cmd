@@ -29,14 +29,14 @@ EOT;
 
         $help = self::$header;
 
-        App::echo($help, Color::FOREGROUND_COLOR_YELLOW);
+        self::echo($help, Color::FOREGROUND_COLOR_YELLOW);
 
-        App::eol();
+        self::eol();
     }
 
     public function displayUsage(): void {
 
-        $cmd = $this->cmd();
+        $cmd = $this->getCmd();
 
         $oc = $cmd->getOptionCollection();
         $has_options = !empty($oc->options);
@@ -45,11 +45,11 @@ EOT;
 
         $has_subcommands = !empty($cmd->subcommands);
 
-        App::eol();
-        App::echo('Usage: ', Color::FOREGROUND_COLOR_YELLOW);
-        App::eol();
+        self::eol();
+        self::echo('Usage: ', Color::FOREGROUND_COLOR_YELLOW);
+        self::eol();
 
-        App::echo(
+        self::echo(
             '  ' .
             ($cmd->parent !== null ? $cmd->cmd : 'command') .
             ($has_options ? ' [options]' : '') .
@@ -57,12 +57,12 @@ EOT;
             ($has_subcommands ? ' [command]' : '')
         );
 
-        App::eol();
+        self::eol();
     }
 
     private function getArgumentUsage() {
 
-        $cmd = $this->cmd();
+        $cmd = $this->getCmd();
 
         $arg_usage = [];
         foreach ($cmd->argumentSpecs as $k => $v) {
@@ -74,29 +74,29 @@ EOT;
 
     public function displayArguments(): void {
 
-        $cmd = $this->cmd();
+        $cmd = $this->getCmd();
 
         $has_arguments = !empty($cmd->argumentSpecs);
 
         if ($has_arguments) {
 
-            App::eol();
-            App::echo('Arguments: ', Color::FOREGROUND_COLOR_YELLOW);
-            App::eol();
+            self::eol();
+            self::echo('Arguments: ', Color::FOREGROUND_COLOR_YELLOW);
+            self::eol();
 
             foreach ($cmd->argumentSpecs as $argumentSpec => $config) {
 
                 $s = $argumentSpec;
                 $s = '  ' . str_pad($s, 20, ' ');
-                App::echo($s, Color::FOREGROUND_COLOR_GREEN);
+                self::echo($s, Color::FOREGROUND_COLOR_GREEN);
 
                 $s = ' ' . (array_key_exists('description', $config) ? $config['description'] : '');
-                App::echo($s);
+                self::echo($s);
 
-                App::eol();
+                self::eol();
             }
 
-            App::eol();
+            self::eol();
 
         }
 
@@ -104,16 +104,16 @@ EOT;
 
     public function displayOptions(): void {
 
-        $cmd = $this->cmd();
+        $cmd = $this->getCmd();
 
         $oc = $cmd->getOptionCollection();
         $has_options = !empty($oc->options);
 
         if ($has_options) {
 
-            App::eol();
-            App::echo('Options: ', Color::FOREGROUND_COLOR_YELLOW);
-            App::eol();
+            self::eol();
+            self::echo('Options: ', Color::FOREGROUND_COLOR_YELLOW);
+            self::eol();
 
             foreach ($oc->options as $option) {
 
@@ -124,48 +124,48 @@ EOT;
                 $s .= '--' . $option->long;
 
                 $s = '  ' . str_pad($s, 20, ' ');
-                App::echo($s, Color::FOREGROUND_COLOR_GREEN);
+                self::echo($s, Color::FOREGROUND_COLOR_GREEN);
 
                 $s = ' ' . $option->desc;
-                App::echo($s);
+                self::echo($s);
 
                 if ($option->defaultValue) {
                     $s = ' [default: ' . $option->defaultValue . ']';
-                    App::echo($s, Color::FOREGROUND_COLOR_YELLOW);
+                    self::echo($s, Color::FOREGROUND_COLOR_YELLOW);
                 }
 
-                App::eol();
+                self::eol();
             }
 
-            App::eol();
+            self::eol();
         }
 
     }
 
     public function displaySubcommands(): void {
 
-        $cmd = $this->cmd();
+        $cmd = $this->getCmd();
 
         $has_subcommands = !empty($cmd->subcommands);
 
         if ($has_subcommands) {
 
-            App::eol();
-            App::echo('Available commands: ', Color::FOREGROUND_COLOR_YELLOW);
-            App::eol();
+            self::eol();
+            self::echo('Available commands: ', Color::FOREGROUND_COLOR_YELLOW);
+            self::eol();
 
             foreach ($cmd->subcommands as $_cmd) {
 
                 $s = '  ' . str_pad($_cmd->cmd, 20, ' ');
-                App::echo($s, Color::FOREGROUND_COLOR_GREEN);
+                self::echo($s, Color::FOREGROUND_COLOR_GREEN);
 
                 $s = ' ' . $_cmd->descr;
-                App::echo($s);
+                self::echo($s);
 
-                App::eol();
+                self::eol();
             }
 
-            App::eol();
+            self::eol();
         }
     }
 

@@ -5,8 +5,6 @@ namespace Stefaminator\Cli;
 use Exception;
 use GetOptionKit\OptionCollection;
 use GetOptionKit\OptionResult;
-use ReflectionFunction;
-use RuntimeException;
 
 
 class Cmd {
@@ -62,22 +60,13 @@ class Cmd {
     public $subcommands = [];
 
     /**
-     * @var callable|null
+     * @var CmdRunner|null
      */
-    private $callable;
+    private $runner;
 
 
     public function __construct(string $cmd) {
         $this->cmd = $cmd;
-//        if ($cmd !== 'help') {
-//            $this->addSubCmd(
-//                self::extend('help')
-//                    ->setDescription('Displays help for this command.')
-//                    ->setCallable(static function (Cmd $cmd) {
-//                        $cmd->parent->help();
-//                    })
-//            );
-//        }
     }
 
     public function addOption(string $specString, array $config): self {
@@ -117,19 +106,11 @@ class Cmd {
         return $this;
     }
 
-    /**
-     * @param callable $callable
-     * @return $this
-     */
-    public function setCallable(callable $callable): self {
+    public function setRunner(CmdRunner $runner): self {
 
-        try {
-            $this->callable = $this->validateCallable($callable);
+        $runner->setCmd($this);
 
-        } catch (Exception $e) {
-            echo __METHOD__ . ' has been called with invalid callable: ' . $e->getMessage() . "\n";
-        }
-
+        $this->runner = $runner;
 
         return $this;
     }
@@ -190,8 +171,8 @@ class Cmd {
         return lcfirst($pwd_str);
     }
 
-    public function getCallable(): ?callable {
-        return $this->callable;
+    public function getRunner(): ?CmdRunner {
+        return $this->runner;
     }
 
     public function getOptionCollection(): OptionCollection {
@@ -224,11 +205,11 @@ class Cmd {
             return false;
         }
 
-        App::eol();
-        App::echo('Uups, something went wrong!', Color::FOREGROUND_COLOR_RED);
-        App::eol();
-        App::echo($this->optionParseException->getMessage(), Color::FOREGROUND_COLOR_RED);
-        App::eol();
+        CmdRunner::eol();
+        CmdRunner::echo('Uups, something went wrong!', Color::FOREGROUND_COLOR_RED);
+        CmdRunner::eol();
+        CmdRunner::echo($this->optionParseException->getMessage(), Color::FOREGROUND_COLOR_RED);
+        CmdRunner::eol();
 
         $this->help();
 
@@ -237,37 +218,6 @@ class Cmd {
 
     public function help(): void {
         (new HelpRunner($this))->run();
-    }
-
-
-    /**
-     * @param callable $callable
-     * @return callable
-     * @throws Exception
-     */
-    private function validateCallable(callable $callable): callable {
-
-        $check = new ReflectionFunction($callable);
-        $parameters = $check->getParameters();
-
-        if (count($parameters) !== 1) {
-            throw new RuntimeException('Invalid number of Parameters. Should be 1.');
-        }
-
-        $type = $parameters[0]->getType();
-
-        if ($type === null) {
-            throw new RuntimeException('Named type of Parameter 1 should be "' . __CLASS__ . '".');
-        }
-
-        /** @noinspection PhpPossiblePolymorphicInvocationInspection */
-        $tname = $type->getName();
-
-        if ($tname !== __CLASS__) {
-            throw new RuntimeException('Named type of Parameter 1 should be "' . __CLASS__ . '".');
-        }
-
-        return $callable;
     }
 
     public static function extend(string $cmd): Cmd {

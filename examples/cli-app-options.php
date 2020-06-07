@@ -6,6 +6,7 @@ require __DIR__ . '/../vendor/autoload.php';
 use Stefaminator\Cli\App;
 use Stefaminator\Cli\AppParser;
 use Stefaminator\Cli\Cmd;
+use Stefaminator\Cli\CmdRunner;
 use Stefaminator\Cli\Color;
 
 AppParser::run(
@@ -27,47 +28,56 @@ AppParser::run(
                     'isa' => 'string',
                     'default' => 'World'
                 ])
+                ->setRunner(
+                    (new class extends CmdRunner {
 
-                ->setCallable(static function(Cmd $cmd) {
+                        public function run(): void {
 
-                    if ($cmd->hasProvidedOption('help')) {
-                        $cmd->help();
-                        return;
-                    }
+                            $cmd = $this->getCmd();
 
-                    $name = $cmd->getProvidedOption('name');
+                            if ($cmd->hasProvidedOption('help')) {
+                                $cmd->help();
+                                return;
+                            }
 
-                    self::eol();
-                    self::echo(sprintf('Hello %s', $name), Color::FOREGROUND_COLOR_YELLOW);
-                    self::eol();
-                    self::eol();
+                            $name = $cmd->getProvidedOption('name');
 
-                    if ($cmd->hasProvidedOption('verbose')) {
-
-                        self::echo('--- VERBOSE OUTPUT ---' . APP::EOL, Color::FOREGROUND_COLOR_GREEN);
-                        self::eol();
-
-                        self::echo('  All current options...' . APP::EOL, Color::FOREGROUND_COLOR_GREEN);
-
-                        $pOptions = $cmd->getAllProvidedOptions();
-                        foreach ($pOptions as $k => $v) {
-                            self::echo('    ' . $k . ': ' . $v, Color::FOREGROUND_COLOR_GREEN);
                             self::eol();
-                        }
-                        self::eol();
-
-                        self::echo('  All current arguments...' . APP::EOL, Color::FOREGROUND_COLOR_GREEN);
-
-                        $args = $cmd->getAllProvidedArguments();
-                        foreach ($args as $a) {
-                            self::echo('    ' . $a, Color::FOREGROUND_COLOR_GREEN);
+                            self::echo(sprintf('Hello %s', $name), Color::FOREGROUND_COLOR_YELLOW);
                             self::eol();
+                            self::eol();
+
+                            if ($cmd->hasProvidedOption('verbose')) {
+
+                                self::echo('--- VERBOSE OUTPUT ---', Color::FOREGROUND_COLOR_GREEN);
+                                self::eol();
+                                self::eol();
+
+                                self::echo('  All current options...', Color::FOREGROUND_COLOR_GREEN);
+                                self::eol();
+
+                                $pOptions = $cmd->getAllProvidedOptions();
+                                foreach ($pOptions as $k => $v) {
+                                    self::echo('    ' . $k . ': ' . $v, Color::FOREGROUND_COLOR_GREEN);
+                                    self::eol();
+                                }
+                                self::eol();
+
+                                self::echo('  All current arguments...', Color::FOREGROUND_COLOR_GREEN);
+                                self::eol();
+
+                                $args = $cmd->getAllProvidedArguments();
+                                foreach ($args as $a) {
+                                    self::echo('    ' . $a, Color::FOREGROUND_COLOR_GREEN);
+                                    self::eol();
+                                }
+                                self::eol();
+
+                            }
+
                         }
-                        self::eol();
-
-                    }
-
-                });
+                    })
+                );
         }
 
     })

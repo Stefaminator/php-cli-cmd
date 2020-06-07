@@ -7,6 +7,7 @@ use Exception;
 use RuntimeException;
 use Stefaminator\Cli\App;
 use Stefaminator\Cli\Cmd;
+use Stefaminator\Cli\CmdRunner;
 use Stefaminator\Cli\Color;
 use Stefaminator\Cli\Progress;
 
@@ -16,6 +17,19 @@ class TestApp1 extends App {
 
         return Cmd::root()
             ->addOption('h|help', ['description' => 'Display the command help'])
+            ->setRunner(
+                (new class extends CmdRunner {
+
+                    public function run(): void {
+
+                        self::eol();
+
+                        echo "Main Command has been executed";
+
+                        self::eol();
+                    }
+                })
+            )
             ->addSubCmd(
                 Cmd::extend('list')
                     ->addOption('xml', [
@@ -26,12 +40,59 @@ class TestApp1 extends App {
                         'isa' => 'string',
                         'default' => 'txt'
                     ])
-                    ->setCallable(function(Cmd $cmd) {
-                        $this->cmdList($cmd);
-                    })
+                    ->setRunner(
+                        (new class extends CmdRunner {
+
+                            public function run(): void {
+
+                                echo "\e[0;31;42mMerry Christmas!\e[0m\n";
+
+                                echo Color::green('Merry X-Mas');
+
+                                self::eol();
+
+                                Color::echo('Merry X-Mas', Color::FOREGROUND_COLOR_RED, Color::BACKGROUND_COLOR_GREEN);
+
+                                self::eol();
+
+                                echo Color::red('Merry X-Mas');
+
+                                self::eol();
+                            }
+                        })
+                    )
             )
             ->addSubCmd(
                 Cmd::extend('show')
+                    ->setRunner(
+                        (new class extends CmdRunner {
+
+                            public function run(): void {
+
+                                $total = 100;
+
+                                self::eol();
+                                self::eol();
+
+                                for($i=0; $i<$total; $i++){
+
+                                    Progress::showStatus($i+1, $total);
+
+                                    try {
+                                        $micro_seconds = random_int(1000, 100000);
+                                    } catch (Exception $e) {
+                                        $micro_seconds = 10000;
+                                    }
+
+                                    usleep($micro_seconds);
+                                }
+
+                                self::eol();
+                                self::eol();
+
+                            }
+                        })
+                    )
                     ->addSubCmd(
                         Cmd::extend('hello')
                             ->addOption('name:', [
@@ -39,6 +100,24 @@ class TestApp1 extends App {
                                 'isa' => 'string',
                                 'required' => true
                             ])
+                            ->setRunner(
+                                (new class extends CmdRunner {
+
+                                    public function run(): void {
+
+                                        $cmd = $this->getCmd();
+
+                                        $name = $cmd->getProvidedOption('name');
+
+                                        self::eol();
+
+                                        echo "Hello $name";
+
+                                        self::eol();
+
+                                    }
+                                })
+                            )
                     )
                     ->addSubCmd(
                         Cmd::extend('stats')
@@ -46,12 +125,32 @@ class TestApp1 extends App {
                                 'description' => 'The stats start date',
                                 'isa' => 'date',
                             ])
+                            ->setRunner(
+                                (new class extends CmdRunner {
+
+                                    public function run(): void {
+
+                                        $cmd = $this->getCmd();
+
+                                        $date = $cmd->getProvidedOption('start');
+
+                                        if($date !== null) {
+                                            echo $date['year'] . '-' . $date['month'] . '-' . $date['day'];
+                                        }
+                                    }
+                                })
+                            )
                     )
                     ->addSubCmd(
                         Cmd::extend('exception')
-                            ->setCallable(static function(Cmd $cmd) {
-                                throw new RuntimeException('fail');
-                            })
+                            ->setRunner(
+                                (new class extends CmdRunner {
+
+                                    public function run(): void {
+                                        throw new RuntimeException('fail');
+                                    }
+                                })
+                            )
                     )
             )
             ->addSubCmd(
@@ -70,108 +169,37 @@ class TestApp1 extends App {
                         'description' => 'Multiple names of the greetings receivers.',
                         'multiple' => true
                     ])
-                    ->setCallable(function(Cmd $cmd) {
-                        $this->cmdGreetings($cmd);
-                    })
+                    ->setRunner(
+                        (new class extends CmdRunner {
+
+                            public function run(): void {
+
+                                $cmd = $this->getCmd();
+
+                                if($cmd->hasProvidedOption('help')) {
+                                    $cmd->help();
+                                    return;
+                                }
+                            }
+                        })
+                    )
             )
             ->addSubCmd(
                 Cmd::extend('help')
                     ->setDescription('Displays help for this command.')
-                    ->setCallable(static function (Cmd $cmd) {
-                        $cmd->parent->help();
-                    })
+                    ->setRunner(
+                        (new class extends CmdRunner {
+
+                            public function run(): void {
+
+                                $cmd = $this->getCmd();
+                                $cmd->parent->help();
+
+                            }
+                        })
+                    )
             );
     }
 
-    /** @noinspection PhpUnusedParameterInspection */
-    public function cmd(Cmd $cmd): void {
-
-        self::eol();
-
-        echo "Main Command has been executed";
-
-        self::eol();
-    }
-
-
-    public function cmdGreetings(Cmd $cmd): void {
-
-        if($cmd->hasProvidedOption('help')) {
-            $cmd->help();
-            return;
-        }
-
-    }
-
-    /** @noinspection PhpUnusedParameterInspection */
-    public function cmdList(Cmd $cmd): void {
-
-        echo "\e[0;31;42mMerry Christmas!\e[0m\n";
-
-        echo Color::green('Merry X-Mas');
-
-        self::eol();
-
-        Color::echo('Merry X-Mas', Color::FOREGROUND_COLOR_RED, Color::BACKGROUND_COLOR_GREEN);
-
-        self::eol();
-
-        echo Color::red('Merry X-Mas');
-
-        self::eol();
-    }
-
-    /** @noinspection PhpUnusedParameterInspection */
-    public function cmdShow(Cmd $cmd): void {
-
-        $total = 100;
-
-        self::eol();
-        self::eol();
-
-        for($i=0; $i<$total; $i++){
-
-            Progress::showStatus($i+1, $total);
-
-            try {
-                $micro_seconds = random_int(1000, 100000);
-            } catch (Exception $e) {
-                $micro_seconds = 10000;
-            }
-
-            usleep($micro_seconds);
-        }
-
-        self::eol();
-        self::eol();
-    }
-
-    public function cmdShowHello(Cmd $cmd): void {
-
-        $name = $cmd->getProvidedOption('name');
-
-        self::eol();
-
-        echo "Hello $name";
-
-        self::eol();
-    }
-
-    public function cmdShowStats(Cmd $cmd) {
-
-        $date = $cmd->getProvidedOption('start');
-
-        if($date !== null) {
-            echo $date['year'] . '-' . $date['month'] . '-' . $date['day'];
-        }
-
-//        echo var_dump($date);
-    }
-
-    public function cmdHelp(Cmd $cmd) {
-
-        $cmd->help();
-
-    }
 
 }
