@@ -58,7 +58,7 @@ the same with less code" - Yes, I believe you can!
 
 #### Options
 
-**Ok, let's add some options!** One help flag option (`--help` or `-h`),  verbose flag option (`--verbose` or `-v`) 
+**Ok, let's add some options!** One help flag option (`--help` or `-h`), one verbose flag option (`--verbose` or `-v`) 
 and one name option that requires a value (`--name=Stefaminator`).
 
 - Spec for **help** option: `h|help` 
