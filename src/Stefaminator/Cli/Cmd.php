@@ -152,25 +152,6 @@ class Cmd {
         return null;
     }
 
-    public function getMethodName(): string {
-        $cmd = $this;
-        $pwd = [];
-
-        while ($cmd !== null) {
-            $pwd[] = $cmd->parent !== null ? $cmd->cmd : 'cmd';
-            $cmd = $cmd->parent;
-        }
-
-        $pwd = array_reverse($pwd);
-
-        $pwd_str = '';
-        foreach ($pwd as $p) {
-            $pwd_str .= ucfirst(strtolower($p));
-        }
-
-        return lcfirst($pwd_str);
-    }
-
     public function getRunner(): ?CmdRunner {
         return $this->runner;
     }

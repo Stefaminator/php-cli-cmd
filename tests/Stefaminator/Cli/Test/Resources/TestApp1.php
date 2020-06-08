@@ -74,9 +74,9 @@ class TestApp1 extends App {
                                 self::eol();
                                 self::eol();
 
-                                for($i=0; $i<$total; $i++){
+                                for ($i = 0; $i < $total; $i++) {
 
-                                    Progress::showStatus($i+1, $total);
+                                    Progress::showStatus($i + 1, $total);
 
                                     try {
                                         $micro_seconds = random_int(1000, 100000);
@@ -95,9 +95,11 @@ class TestApp1 extends App {
                     )
                     ->addSubCmd(
                         Cmd::extend('hello')
+                            ->addOption('h|help', ['description' => 'Display the command help'])
                             ->addOption('name:', [
                                 'description' => 'The stats start date',
                                 'isa' => 'string',
+                                'default' => 'world',
                                 'required' => true
                             ])
                             ->setRunner(
@@ -106,6 +108,11 @@ class TestApp1 extends App {
                                     public function run(): void {
 
                                         $cmd = $this->getCmd();
+
+                                        if($cmd->hasProvidedOption('help')) {
+                                            $cmd->help();
+                                            return;
+                                        }
 
                                         $name = $cmd->getProvidedOption('name');
 
@@ -116,15 +123,32 @@ class TestApp1 extends App {
                                         self::eol();
 
                                     }
+
+                                    public function help(): void {
+
+                                        echo '' .
+                                            Color::red('test') . ' ' .
+                                            Color::green('test') . ' ' .
+                                            Color::blue('test') . ' ' .
+                                            Color::yellow('test') . ' ' .
+                                            Color::purple('test');
+
+                                    }
                                 })
                             )
                     )
                     ->addSubCmd(
                         Cmd::extend('stats')
+
+                            ->addOption('v|verbose', [
+                                'description' => 'Flag to enable verbose output.'
+                            ])
+
                             ->addOption('start:', [
                                 'description' => 'The stats start date',
                                 'isa' => 'date',
                             ])
+
                             ->setRunner(
                                 (new class extends CmdRunner {
 
@@ -134,8 +158,39 @@ class TestApp1 extends App {
 
                                         $date = $cmd->getProvidedOption('start');
 
-                                        if($date !== null) {
-                                            echo $date['year'] . '-' . $date['month'] . '-' . $date['day'];
+                                        if ($date !== null) {
+                                            $date_out = $date['year'] . '-' . $date['month'] . '-' . $date['day'];
+                                            Color::echo($date_out, Color::FOREGROUND_COLOR_WHITE, Color::BACKGROUND_COLOR_PURPLE);
+                                        }
+                                        self::eol();
+                                        self::eol();
+
+
+                                        if ($cmd->hasProvidedOption('verbose')) {
+
+                                            self::echo('--- VERBOSE OUTPUT ---', Color::FOREGROUND_COLOR_GREEN);
+                                            self::eol();
+                                            self::eol();
+
+                                            self::echo('  All current options...', Color::FOREGROUND_COLOR_GREEN);
+                                            self::eol();
+
+                                            $pOptions = $cmd->getAllProvidedOptions();
+                                            foreach ($pOptions as $k => $v) {
+                                                self::echo('    ' . $k . ': ' . json_encode($v), Color::FOREGROUND_COLOR_GREEN);
+                                                self::eol();
+                                            }
+                                            self::eol();
+
+                                            self::echo('  All current arguments...', Color::FOREGROUND_COLOR_GREEN);
+                                            self::eol();
+
+                                            $args = $cmd->getAllProvidedArguments();
+                                            foreach ($args as $a) {
+                                                self::echo('    ' . $a, Color::FOREGROUND_COLOR_GREEN);
+                                                self::eol();
+                                            }
+                                            self::eol();
                                         }
                                     }
                                 })
@@ -176,7 +231,7 @@ class TestApp1 extends App {
 
                                 $cmd = $this->getCmd();
 
-                                if($cmd->hasProvidedOption('help')) {
+                                if ($cmd->hasProvidedOption('help')) {
                                     $cmd->help();
                                     return;
                                 }

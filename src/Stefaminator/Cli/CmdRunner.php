@@ -42,6 +42,13 @@ abstract class CmdRunner {
      */
     abstract public function run(): void;
 
+    /**
+     * Overwrite this method for extended help
+     */
+    public function help(): void {
+
+    }
+
 
     public const EOL = "\n";
 
@@ -64,4 +71,5 @@ abstract class CmdRunner {
 
         echo implode(self::EOL, $output);
     }
+
 }

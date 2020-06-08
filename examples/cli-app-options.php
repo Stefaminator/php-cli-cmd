@@ -58,7 +58,7 @@ AppParser::run(
 
                                 $pOptions = $cmd->getAllProvidedOptions();
                                 foreach ($pOptions as $k => $v) {
-                                    self::echo('    ' . $k . ': ' . $v, Color::FOREGROUND_COLOR_GREEN);
+                                    self::echo('    ' . $k . ': ' . json_encode($v), Color::FOREGROUND_COLOR_GREEN);
                                     self::eol();
                                 }
                                 self::eol();
@@ -74,6 +74,17 @@ AppParser::run(
                                 self::eol();
 
                             }
+
+                        }
+
+                        public function help(): void {
+
+                            echo '' .
+                                ' This is the custom help for ' . Color::green('cli-app-options') . ' command. ' . self::EOL .
+                                ' Please use the --name option to pass your name to this command and you will be greeted personally. ' . self::EOL .
+                                ' ' . self::EOL .
+                                ' ' . Color::green('php cli-app-options.php --name="great Stefaminator"') . self::EOL ;
+
 
                         }
                     })

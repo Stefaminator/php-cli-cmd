@@ -11,9 +11,9 @@ class HelpRunner extends CmdRunner {
               o       
            ` /_\ '    
           - (o o) -   
-----------ooO--(_)--Ooo----------
+--------ooO--(_)--Ooo--------
           Need help?
----------------------------------  
+-----------------------------
 EOT;
 
 
@@ -23,6 +23,8 @@ EOT;
         $this->displayArguments();
         $this->displayOptions();
         $this->displaySubcommands();
+        $this->displayHelp();
+        self::eol();
     }
 
     public function displayHeader(): void {
@@ -96,8 +98,6 @@ EOT;
                 self::eol();
             }
 
-            self::eol();
-
         }
 
     }
@@ -136,8 +136,6 @@ EOT;
 
                 self::eol();
             }
-
-            self::eol();
         }
 
     }
@@ -164,9 +162,32 @@ EOT;
 
                 self::eol();
             }
-
-            self::eol();
         }
+    }
+
+    public function displayHelp(): void {
+
+        $cmd = $this->getCmd();
+
+        $runner = $cmd->getRunner();
+
+        if($runner === null) {
+            return;
+        }
+
+        ob_start();
+        $runner->help();
+        $help = ob_get_clean();
+
+        if(empty($help)) {
+            return;
+        }
+
+        self::eol();
+        self::echo('Help: ', Color::FOREGROUND_COLOR_YELLOW);
+        self::eol();
+
+        echo $help;
     }
 
 }

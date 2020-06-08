@@ -22,7 +22,9 @@ class AppParser {
                     return;
                 }
 
-                self::callStack($app, $cmd);
+                if (self::callRunner($cmd)) {
+                    return;
+                }
 
             }
         } catch (Exception $e) {
@@ -37,22 +39,6 @@ class AppParser {
     }
 
     /**
-     * @param App $app
-     * @param Cmd $cmd
-     * @throws Exception
-     */
-    private static function callStack(App $app, Cmd $cmd): void {
-
-        if (self::callRunner($cmd)) {
-            return;
-        }
-
-        if (self::callMethod($app, $cmd)) {
-            return;
-        }
-    }
-
-    /**
      * @param Cmd $cmd
      * @return bool
      * @throws Exception
@@ -63,25 +49,6 @@ class AppParser {
 
         if($runner !== null) {
             $runner->run();
-            return true;
-        }
-
-        return false;
-    }
-
-
-    /**
-     * @param App $app
-     * @param Cmd $cmd
-     * @return bool
-     * @throws Exception
-     */
-    private static function callMethod(App $app, Cmd $cmd): bool {
-
-        $methodName = $cmd->getMethodName();
-
-        if (method_exists($app, $methodName)) {
-            $app->$methodName($cmd);
             return true;
         }
 
