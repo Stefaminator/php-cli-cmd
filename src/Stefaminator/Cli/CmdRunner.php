@@ -16,7 +16,7 @@ abstract class CmdRunner {
      * @param Cmd $cmd
      */
     public function __construct(Cmd $cmd = null) {
-        if($cmd !== null) {
+        if ($cmd !== null) {
             $this->cmd = $cmd;
             return;
         }
@@ -57,7 +57,7 @@ abstract class CmdRunner {
         echo self::EOL;
     }
 
-    public static function echo(string $str, ?string $foreground_color = null) : void {
+    public static function echo(string $str, ?string $foreground_color = null): void {
 
         $lines = preg_split("/\r\n|\n|\r/", $str);
 

@@ -14,15 +14,12 @@ AppParser::run(
 
         public function setup(): Cmd {
             return Cmd::root()
-
                 ->addOption('h|help', [
                     'description' => 'Displays the command help.'
                 ])
-
                 ->addOption('v|verbose', [
                     'description' => 'Flag to enable verbose output.'
                 ])
-
                 ->addOption('name:', [
                     'description' => 'Name option. This option requires a value.',
                     'isa' => 'string',
@@ -48,31 +45,7 @@ AppParser::run(
                             self::eol();
 
                             if ($cmd->hasProvidedOption('verbose')) {
-
-                                self::echo('--- VERBOSE OUTPUT ---', Color::FOREGROUND_COLOR_GREEN);
-                                self::eol();
-                                self::eol();
-
-                                self::echo('  All current options...', Color::FOREGROUND_COLOR_GREEN);
-                                self::eol();
-
-                                $pOptions = $cmd->getAllProvidedOptions();
-                                foreach ($pOptions as $k => $v) {
-                                    self::echo('    ' . $k . ': ' . json_encode($v), Color::FOREGROUND_COLOR_GREEN);
-                                    self::eol();
-                                }
-                                self::eol();
-
-                                self::echo('  All current arguments...', Color::FOREGROUND_COLOR_GREEN);
-                                self::eol();
-
-                                $args = $cmd->getAllProvidedArguments();
-                                foreach ($args as $a) {
-                                    self::echo('    ' . $a, Color::FOREGROUND_COLOR_GREEN);
-                                    self::eol();
-                                }
-                                self::eol();
-
+                                $this->verbose();
                             }
 
                         }
@@ -83,8 +56,50 @@ AppParser::run(
                                 ' This is the custom help for ' . Color::green('cli-app-options') . ' command. ' . self::EOL .
                                 ' Please use the --name option to pass your name to this command and you will be greeted personally. ' . self::EOL .
                                 ' ' . self::EOL .
-                                ' ' . Color::green('php cli-app-options.php --name="great Stefaminator"') . self::EOL ;
+                                ' ' . Color::green('php cli-app-options.php --name="great Stefaminator"') . self::EOL;
 
+
+                        }
+
+                        private function verbose(): void {
+
+                            self::echo('--- VERBOSE OUTPUT ---', Color::FOREGROUND_COLOR_GREEN);
+                            self::eol();
+                            self::eol();
+
+                            $this->outputProvidedOptions();
+
+                            $this->outputProvidedArguments();
+                        }
+
+                        private function outputProvidedOptions(): void {
+
+                            $cmd = $this->getCmd();
+
+                            self::echo('  All current options...', Color::FOREGROUND_COLOR_GREEN);
+                            self::eol();
+
+                            $pOptions = $cmd->getAllProvidedOptions();
+                            foreach ($pOptions as $k => $v) {
+                                self::echo('    ' . $k . ': ' . json_encode($v), Color::FOREGROUND_COLOR_GREEN);
+                                self::eol();
+                            }
+                            self::eol();
+                        }
+
+                        private function outputProvidedArguments(): void {
+
+                            $cmd = $this->getCmd();
+
+                            self::echo('  All current arguments...', Color::FOREGROUND_COLOR_GREEN);
+                            self::eol();
+
+                            $args = $cmd->getAllProvidedArguments();
+                            foreach ($args as $a) {
+                                self::echo('    ' . $a, Color::FOREGROUND_COLOR_GREEN);
+                                self::eol();
+                            }
+                            self::eol();
 
                         }
                     })

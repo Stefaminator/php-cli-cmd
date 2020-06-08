@@ -134,7 +134,7 @@ class Cmd {
         $r = [];
         if ($this->optionResult !== null) {
             $keys = array_keys($this->optionResult->keys);
-            foreach($keys as $key) {
+            foreach ($keys as $key) {
                 $r[$key] = $this->getProvidedOption($key);
             }
         }

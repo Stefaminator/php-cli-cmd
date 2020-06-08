@@ -171,7 +171,7 @@ EOT;
 
         $runner = $cmd->getRunner();
 
-        if($runner === null) {
+        if ($runner === null) {
             return;
         }
 
@@ -179,7 +179,7 @@ EOT;
         $runner->help();
         $help = ob_get_clean();
 
-        if(empty($help)) {
+        if (empty($help)) {
             return;
         }
 

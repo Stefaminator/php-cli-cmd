@@ -47,7 +47,7 @@ class AppParser {
 
         $runner = $cmd->getRunner();
 
-        if($runner !== null) {
+        if ($runner !== null) {
             $runner->run();
             return true;
         }
