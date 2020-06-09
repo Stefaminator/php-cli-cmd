@@ -13,67 +13,79 @@ AppParser::run(
     new class extends App {
 
         public function setup(): Cmd {
-            return Cmd::root()
-                ->setRunner(
-                    (new class extends CmdRunner {
+            return Cmd::createRootCmd(
+                new class extends CmdRunner {
+
+                    public function run(): void {
+                        $this->getCmd()->help();
+                    }
+                }
+            )
+                ->addSubCmd(
+                    Cmd::createSubCmd('show', new class extends CmdRunner {
+
+                        public function init(Cmd $cmd): void {
+
+                            $cmd
+                                ->setDescription('This command is used to show something. Take a look at the subcommands.');
+
+                            parent::init($cmd);
+                        }
 
                         public function run(): void {
                             $this->getCmd()->help();
                         }
+
                     })
-                )
-                ->addSubCmd(
-                    Cmd::extend('show')
-                        ->setDescription('This command is used to show something. Take a look at the subcommands.')
-                        ->setRunner(
-                            (new class extends CmdRunner {
+                        ->addSubCmd(
+                            Cmd::createSubCmd('hello', new class extends CmdRunner {
+
+                                public function init(Cmd $cmd): void {
+
+                                    $cmd
+                                        ->setDescription('Displays hello world.')
+                                        ->addOption('name:', [
+                                            'description' => 'Name option. This option requires a value.',
+                                            'isa' => 'string',
+                                            'default' => 'World'
+                                        ]);
+
+                                    parent::init($cmd);
+                                }
 
                                 public function run(): void {
-                                    $this->getCmd()->help();
+
+                                    $cmd = $this->getCmd();
+
+                                    $name = $cmd->getProvidedOption('name');
+
+                                    self::eol();
+                                    self::echo(sprintf('Hello %s!', $name), Color::FOREGROUND_COLOR_CYAN);
+                                    self::eol();
+                                    self::eol();
                                 }
                             })
                         )
                         ->addSubCmd(
-                            Cmd::extend('hello')
-                                ->setDescription('Displays hello world.')
-                                ->addOption('name:', [
-                                    'description' => 'Name option. This option requires a value.',
-                                    'isa' => 'string',
-                                    'default' => 'World'
-                                ])
-                                ->setRunner(
-                                    (new class extends CmdRunner {
+                            Cmd::createSubCmd('phpversion', new class extends CmdRunner {
 
-                                        public function run(): void {
+                                public function init(Cmd $cmd): void {
 
-                                            $cmd = $this->getCmd();
+                                    $cmd
+                                        ->setDescription('Displays the current php version of your cli.');
 
-                                            $name = $cmd->getProvidedOption('name');
+                                    parent::init($cmd);
+                                }
 
-                                            self::eol();
-                                            self::echo(sprintf('Hello %s!', $name), Color::FOREGROUND_COLOR_CYAN);
-                                            self::eol();
-                                            self::eol();
-                                        }
-                                    })
-                                )
-                        )
-                        ->addSubCmd(
-                            Cmd::extend('phpversion')
-                                ->setDescription('Displays the current php version of your cli.')
-                                ->setRunner(
-                                    (new class extends CmdRunner {
-
-                                        public function run(): void {
-                                            self::eol();
-                                            self::echo('  Your PHP version is:', Color::FOREGROUND_COLOR_YELLOW);
-                                            self::eol();
-                                            self::echo('  ' . PHP_VERSION);
-                                            self::eol();
-                                            self::eol();
-                                        }
-                                    })
-                                )
+                                public function run(): void {
+                                    self::eol();
+                                    self::echo('  Your PHP version is:', Color::FOREGROUND_COLOR_YELLOW);
+                                    self::eol();
+                                    self::echo('  ' . PHP_VERSION);
+                                    self::eol();
+                                    self::eol();
+                                }
+                            })
                         )
                 );
         }

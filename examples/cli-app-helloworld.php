@@ -9,19 +9,19 @@ use Stefaminator\Cli\Cmd;
 use Stefaminator\Cli\CmdRunner;
 
 AppParser::run(
-    (new class extends App {
+    new class extends App {
 
         public function setup(): Cmd {
-            return Cmd::root()
-                ->setRunner(
-                    (new class extends CmdRunner {
-                        public function run(): void {
-                            echo "Hello World";
-                            echo "\n";
-                        }
-                    })
-                );
-        }
 
-    })
+            return Cmd::createRootCmd(
+                new class extends CmdRunner {
+                    public function run(): void {
+                        echo "Hello World";
+                        echo "\n";
+                    }
+                }
+            );
+
+        }
+    }
 );

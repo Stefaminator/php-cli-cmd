@@ -108,9 +108,12 @@ class Cmd {
 
     public function setRunner(CmdRunner $runner): self {
 
-        $runner->setCmd($this);
+        if ($this->runner === null) {
 
-        $this->runner = $runner;
+            $runner->init($this);
+
+            $this->runner = $runner;
+        }
 
         return $this;
     }
@@ -201,12 +204,16 @@ class Cmd {
         (new HelpRunner($this))->run();
     }
 
-    public static function extend(string $cmd): Cmd {
-        return new class($cmd) extends Cmd {
-        };
+    public static function createRootCmd(CmdRunner $runner): Cmd {
+        $_cmd = new Cmd('__root');
+        $_cmd->setRunner($runner);
+        return $_cmd;
     }
 
-    public static function root(): Cmd {
-        return self::extend('__root');
+    public static function createSubCmd(string $cmd, CmdRunner $runner): Cmd {
+        $_cmd = new Cmd($cmd);
+        $_cmd->setRunner($runner);
+        return $_cmd;
     }
+
 }

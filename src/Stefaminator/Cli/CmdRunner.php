@@ -20,7 +20,14 @@ abstract class CmdRunner {
             $this->cmd = $cmd;
             return;
         }
-        $this->cmd = Cmd::root();
+        $this->cmd = new Cmd('__root');
+    }
+
+    /**
+     * @param Cmd $cmd
+     */
+    public function init(Cmd $cmd): void {
+        $this->cmd = $cmd;
     }
 
     /**
@@ -28,13 +35,6 @@ abstract class CmdRunner {
      */
     public function getCmd(): Cmd {
         return $this->cmd;
-    }
-
-    /**
-     * @param Cmd $cmd
-     */
-    public function setCmd(Cmd $cmd): void {
-        $this->cmd = $cmd;
     }
 
     /**
