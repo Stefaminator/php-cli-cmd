@@ -18,7 +18,7 @@ AppParser::run(
 
                     public function init(Cmd $cmd): void {
 
-                        $cmd
+                        $this
                             ->addOption('h|help', [
                                 'description' => 'Displays the command help.'
                             ])
@@ -36,21 +36,19 @@ AppParser::run(
 
                     public function run(): void {
 
-                        $cmd = $this->getCmd();
-
-                        if ($cmd->hasProvidedOption('help')) {
-                            $cmd->help();
+                        if ($this->hasProvidedOption('help')) {
+                            $this->runHelp();
                             return;
                         }
 
-                        $name = $cmd->getProvidedOption('name');
+                        $name = $this->getProvidedOption('name');
 
                         self::eol();
                         self::echo(sprintf('Hello %s', $name), Color::FOREGROUND_COLOR_YELLOW);
                         self::eol();
                         self::eol();
 
-                        if ($cmd->hasProvidedOption('verbose')) {
+                        if ($this->hasProvidedOption('verbose')) {
                             $this->verbose();
                         }
                     }
@@ -77,12 +75,10 @@ AppParser::run(
 
                     private function outputProvidedOptions(): void {
 
-                        $cmd = $this->getCmd();
-
                         self::echo('  All current options...', Color::FOREGROUND_COLOR_GREEN);
                         self::eol();
 
-                        $pOptions = $cmd->getAllProvidedOptions();
+                        $pOptions = $this->getAllProvidedOptions();
                         foreach ($pOptions as $k => $v) {
                             self::echo('    ' . $k . ': ' . json_encode($v), Color::FOREGROUND_COLOR_GREEN);
                             self::eol();
@@ -92,12 +88,10 @@ AppParser::run(
 
                     private function outputProvidedArguments(): void {
 
-                        $cmd = $this->getCmd();
-
                         self::echo('  All current arguments...', Color::FOREGROUND_COLOR_GREEN);
                         self::eol();
 
-                        $args = $cmd->getAllProvidedArguments();
+                        $args = $this->arguments();
                         foreach ($args as $a) {
                             self::echo('    ' . $a, Color::FOREGROUND_COLOR_GREEN);
                             self::eol();

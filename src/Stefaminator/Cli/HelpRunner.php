@@ -38,9 +38,9 @@ EOT;
 
     public function displayUsage(): void {
 
-        $cmd = $this->getCmd();
+        $cmd = $this->cmd();
 
-        $oc = $cmd->getOptionCollection();
+        $oc = $cmd->runner()->optionCollection();
         $has_options = !empty($oc->options);
 
         $arg_usage = $this->getArgumentUsage();
@@ -64,10 +64,10 @@ EOT;
 
     private function getArgumentUsage() {
 
-        $cmd = $this->getCmd();
+        $argSpecs = $this->cmd()->runner()->argSpecs();
 
         $arg_usage = [];
-        foreach ($cmd->argumentSpecs as $k => $v) {
+        foreach ($argSpecs as $k => $v) {
             $arg_usage[] = '[<' . $k . '>]' . (array_key_exists('multiple', $v) ? '...' : '');
         }
 
@@ -76,9 +76,9 @@ EOT;
 
     public function displayArguments(): void {
 
-        $cmd = $this->getCmd();
+        $argSpecs = $this->cmd()->runner()->argSpecs();
 
-        $has_arguments = !empty($cmd->argumentSpecs);
+        $has_arguments = !empty($argSpecs);
 
         if ($has_arguments) {
 
@@ -86,9 +86,9 @@ EOT;
             self::echo('Arguments: ', Color::FOREGROUND_COLOR_YELLOW);
             self::eol();
 
-            foreach ($cmd->argumentSpecs as $argumentSpec => $config) {
+            foreach ($argSpecs as $spec => $config) {
 
-                $s = $argumentSpec;
+                $s = $spec;
                 $s = '  ' . str_pad($s, 20, ' ');
                 self::echo($s, Color::FOREGROUND_COLOR_GREEN);
 
@@ -104,9 +104,7 @@ EOT;
 
     public function displayOptions(): void {
 
-        $cmd = $this->getCmd();
-
-        $oc = $cmd->getOptionCollection();
+        $oc = $this->cmd()->runner()->optionCollection();
         $has_options = !empty($oc->options);
 
         if ($has_options) {
@@ -142,7 +140,7 @@ EOT;
 
     public function displaySubcommands(): void {
 
-        $cmd = $this->getCmd();
+        $cmd = $this->cmd();
 
         $has_subcommands = !empty($cmd->subcommands);
 
@@ -157,7 +155,7 @@ EOT;
                 $s = '  ' . str_pad($_cmd->cmd, 20, ' ');
                 self::echo($s, Color::FOREGROUND_COLOR_GREEN);
 
-                $s = ' ' . $_cmd->descr;
+                $s = ' ' . $_cmd->runner()->description();
                 self::echo($s);
 
                 self::eol();
@@ -167,9 +165,9 @@ EOT;
 
     public function displayHelp(): void {
 
-        $cmd = $this->getCmd();
+        $cmd = $this->cmd();
 
-        $runner = $cmd->getRunner();
+        $runner = $cmd->runner();
 
         if ($runner === null) {
             return;

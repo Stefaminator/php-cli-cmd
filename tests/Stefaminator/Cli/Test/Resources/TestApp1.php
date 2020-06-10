@@ -20,7 +20,7 @@ class TestApp1 extends App {
 
                 public function init(Cmd $cmd): void {
 
-                    $cmd
+                    $this
                         ->addOption('h|help', [
                             'description' => 'Display the command help'
                         ]);
@@ -43,7 +43,7 @@ class TestApp1 extends App {
 
                     public function init(Cmd $cmd): void {
 
-                        $cmd
+                        $this
                             ->addOption('xml', [
                                 'description' => 'To output list as XML'
                             ])
@@ -107,7 +107,7 @@ class TestApp1 extends App {
 
                             public function init(Cmd $cmd): void {
 
-                                $cmd
+                                $this
                                     ->addOption('h|help', ['description' => 'Display the command help'])
                                     ->addOption('name:', [
                                         'description' => 'The stats start date',
@@ -121,14 +121,12 @@ class TestApp1 extends App {
 
                             public function run(): void {
 
-                                $cmd = $this->getCmd();
-
-                                if ($cmd->hasProvidedOption('help')) {
-                                    $cmd->help();
+                                if ($this->hasProvidedOption('help')) {
+                                    $this->runHelp();
                                     return;
                                 }
 
-                                $name = $cmd->getProvidedOption('name');
+                                $name = $this->getProvidedOption('name');
 
                                 self::eol();
 
@@ -155,7 +153,7 @@ class TestApp1 extends App {
 
                             public function init(Cmd $cmd): void {
 
-                                $cmd
+                                $this
                                     ->addOption('v|verbose', [
                                         'description' => 'Flag to enable verbose output.'
                                     ])
@@ -169,9 +167,7 @@ class TestApp1 extends App {
 
                             public function run(): void {
 
-                                $cmd = $this->getCmd();
-
-                                $date = $cmd->getProvidedOption('start');
+                                $date = $this->getProvidedOption('start');
 
                                 if ($date !== null) {
                                     $date_out = $date['year'] . '-' . $date['month'] . '-' . $date['day'];
@@ -181,7 +177,7 @@ class TestApp1 extends App {
                                 self::eol();
 
 
-                                if ($cmd->hasProvidedOption('verbose')) {
+                                if ($this->hasProvidedOption('verbose')) {
 
                                     self::echo('--- VERBOSE OUTPUT ---', Color::FOREGROUND_COLOR_GREEN);
                                     self::eol();
@@ -190,7 +186,7 @@ class TestApp1 extends App {
                                     self::echo('  All current options...', Color::FOREGROUND_COLOR_GREEN);
                                     self::eol();
 
-                                    $pOptions = $cmd->getAllProvidedOptions();
+                                    $pOptions = $this->getAllProvidedOptions();
                                     foreach ($pOptions as $k => $v) {
                                         self::echo('    ' . $k . ': ' . json_encode($v), Color::FOREGROUND_COLOR_GREEN);
                                         self::eol();
@@ -200,7 +196,7 @@ class TestApp1 extends App {
                                     self::echo('  All current arguments...', Color::FOREGROUND_COLOR_GREEN);
                                     self::eol();
 
-                                    $args = $cmd->getAllProvidedArguments();
+                                    $args = $this->arguments();
                                     foreach ($args as $a) {
                                         self::echo('    ' . $a, Color::FOREGROUND_COLOR_GREEN);
                                         self::eol();
@@ -224,20 +220,21 @@ class TestApp1 extends App {
 
                     public function init(Cmd $cmd): void {
 
-                        $cmd
-                            ->setDescription('Display some greetings.')
-                            ->addOption('c|colored', [
-                                'description' => 'Display the greetings colored.'
-                            ])
-                            ->addOption('h|help', [
-                                'description' => 'Displays help for this command.'
-                            ])
+                        $this->description = 'Display some greetings.';
+
+                        $this
                             ->addArgument('event', [
                                 'description' => 'The occasion of the greetings, may be xmas, easter, birthday or some custom event.'
                             ])
                             ->addArgument('names', [
                                 'description' => 'Multiple names of the greetings receivers.',
                                 'multiple' => true
+                            ])
+                            ->addOption('c|colored', [
+                                'description' => 'Display the greetings colored.'
+                            ])
+                            ->addOption('h|help', [
+                                'description' => 'Displays help for this command.'
                             ]);
 
                         parent::init($cmd);
@@ -245,10 +242,8 @@ class TestApp1 extends App {
 
                     public function run(): void {
 
-                        $cmd = $this->getCmd();
-
-                        if ($cmd->hasProvidedOption('help')) {
-                            $cmd->help();
+                        if ($this->hasProvidedOption('help')) {
+                            $this->runHelp();
                             return;
                         }
                     }
@@ -259,17 +254,14 @@ class TestApp1 extends App {
 
                     public function init(Cmd $cmd): void {
 
-                        $cmd
-                            ->setDescription('Displays help for this command.');
+                        $this->description = 'Displays help for this command.';
 
                         parent::init($cmd);
                     }
 
                     public function run(): void {
 
-                        $cmd = $this->getCmd();
-                        $cmd->parent->help();
-
+                        $this->cmd()->parent->runner()->runHelp();
                     }
                 })
             );

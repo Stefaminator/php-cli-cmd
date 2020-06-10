@@ -17,7 +17,7 @@ class TestApp2 extends App {
 
                 public function init(Cmd $cmd): void {
 
-                    $cmd
+                    $this
                         ->addOption('h|help', [
                             'description' => 'Display the command help'
                         ])

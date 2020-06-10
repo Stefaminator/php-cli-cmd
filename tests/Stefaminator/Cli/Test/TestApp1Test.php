@@ -202,18 +202,20 @@ final class TestApp1Test extends TestCase {
 
         $cmd = AppParser::parse($app, $argv);
 
+        $runner = $cmd->runner();
+
         $this->assertSame('__root', $cmd->cmd);
 
-        $this->assertSame(0, $cmd->optionResult->count());
+        $this->assertSame(0, $runner->optionResult->count());
 
-        $this->assertNull($cmd->getProvidedOption('invalidoption'));
-        $this->assertFalse($cmd->hasProvidedOption('invalidoption'));
+        $this->assertNull($runner->getProvidedOption('invalidoption'));
+        $this->assertFalse($runner->hasProvidedOption('invalidoption'));
 
 
-        $this->assertNull($cmd->getProvidedOption('help'));
-        $this->assertFalse($cmd->hasProvidedOption('help'));
+        $this->assertNull($runner->getProvidedOption('help'));
+        $this->assertFalse($runner->hasProvidedOption('help'));
 
-        $this->assertEmpty($cmd->arguments);
+        $this->assertEmpty($runner->arguments);
     }
 
     public function testMainArguments(): void {
@@ -223,11 +225,13 @@ final class TestApp1Test extends TestCase {
 
         $cmd = AppParser::parse($app, $argv);
 
+        $runner = $cmd->runner();
+
         $this->assertSame('__root', $cmd->cmd);
 
-        $this->assertSame(0, $cmd->optionResult->count());
+        $this->assertSame(0, $runner->optionResult->count());
 
-        $this->assertSame(['myarg'], $cmd->arguments);
+        $this->assertSame(['myarg'], $runner->arguments);
     }
 
 
@@ -238,11 +242,13 @@ final class TestApp1Test extends TestCase {
 
         $cmd = AppParser::parse($app, $argv);
 
+        $runner = $cmd->runner();
+
         $this->assertSame('__root', $cmd->cmd);
 
-        $this->assertTrue($cmd->optionResult->get('help'));
+        $this->assertTrue($runner->optionResult->get('help'));
 
-        $this->assertSame(['myarg'], $cmd->arguments);
+        $this->assertSame(['myarg'], $cmd->runner()->arguments);
     }
 
     public function testMainHelpFlag(): void {
@@ -252,9 +258,11 @@ final class TestApp1Test extends TestCase {
 
         $cmd = AppParser::parse($app, $argv);
 
+        $runner = $cmd->runner();
+
         $this->assertSame('__root', $cmd->cmd);
 
-        $this->assertTrue($cmd->optionResult->get('help'));
+        $this->assertTrue($runner->optionResult->get('help'));
 
     }
 
@@ -265,11 +273,13 @@ final class TestApp1Test extends TestCase {
 
         $cmd = AppParser::parse($app, $argv);
 
+        $runner = $cmd->runner();
+
         $this->assertSame('help', $cmd->cmd);
 
-        $this->assertSame(0, $cmd->optionResult->count());
+        $this->assertSame(0, $runner->optionResult->count());
 
-        $this->assertSame(['list'], $cmd->arguments);
+        $this->assertSame(['list'], $runner->arguments);
     }
 
     public function testListXmlFlag(): void {
@@ -279,15 +289,17 @@ final class TestApp1Test extends TestCase {
 
         $cmd = AppParser::parse($app, $argv);
 
+        $runner = $cmd->runner();
+
         $this->assertSame('list', $cmd->cmd);
 
-        $this->assertSame(2, $cmd->optionResult->count());
+        $this->assertSame(2, $runner->optionResult->count());
 
-        $this->assertTrue($cmd->optionResult->get('xml'));
+        $this->assertTrue($runner->optionResult->get('xml'));
 
-        $this->assertSame('txt', $cmd->optionResult->get('format'));
+        $this->assertSame('txt', $runner->optionResult->get('format'));
 
-        $this->assertEmpty($cmd->arguments);
+        $this->assertEmpty($runner->arguments);
 
     }
 
@@ -298,13 +310,15 @@ final class TestApp1Test extends TestCase {
 
         $cmd = AppParser::parse($app, $argv);
 
+        $runner = $cmd->runner();
+
         $this->assertSame('list', $cmd->cmd);
 
-        $this->assertSame(1, $cmd->optionResult->count());
+        $this->assertSame(1, $runner->optionResult->count());
 
-        $this->assertSame('json', $cmd->optionResult->get('format'));
+        $this->assertSame('json', $runner->optionResult->get('format'));
 
-        $this->assertEmpty($cmd->arguments);
+        $this->assertEmpty($runner->arguments);
     }
 
     public function testListInvalidFlag(): void {
@@ -314,17 +328,19 @@ final class TestApp1Test extends TestCase {
 
         $cmd = AppParser::parse($app, $argv);
 
+        $runner = $cmd->runner();
+
         $this->assertSame('list', $cmd->cmd);
 
-        $this->assertSame(0, $cmd->optionResult->count());
+        $this->assertSame(0, $runner->optionResult->count());
 
-        $this->assertNull($cmd->optionResult->get('xml'));
+        $this->assertNull($runner->optionResult->get('xml'));
 
-        $this->assertEmpty($cmd->arguments);
+        $this->assertEmpty($runner->arguments);
 
-        $this->assertInstanceOf(Exception::class, $cmd->optionParseException);
+        $this->assertInstanceOf(Exception::class, $runner->optionParseException);
 
-        $this->assertEquals('Invalid option: --invalid', $cmd->optionParseException->getMessage());
+        $this->assertEquals('Invalid option: --invalid', $runner->optionParseException->getMessage());
 
     }
 
@@ -335,11 +351,13 @@ final class TestApp1Test extends TestCase {
 
         $cmd = AppParser::parse($app, $argv);
 
+        $runner = $cmd->runner();
+
         $this->assertSame('show', $cmd->cmd);
 
-        $this->assertSame(0, $cmd->optionResult->count());
+        $this->assertSame(0, $runner->optionResult->count());
 
-        $this->assertEmpty($cmd->arguments);
+        $this->assertEmpty($runner->arguments);
     }
 
     public function testShowStats(): void {
@@ -349,14 +367,16 @@ final class TestApp1Test extends TestCase {
 
         $cmd = AppParser::parse($app, $argv);
 
+        $runner = $cmd->runner();
+
         $this->assertSame('stats', $cmd->cmd);
 
         $this->assertSame('show', $cmd->parent->cmd);
 
-        $this->assertSame(1, $cmd->optionResult->count());
+        $this->assertSame(1, $runner->optionResult->count());
 
 //        $this->assertSame(\DateTime::createFromFormat('Y-m-d', '2019-01-01'), $cmd->options->get('start'));
 
-        $this->assertEmpty($cmd->arguments);
+        $this->assertEmpty($runner->arguments);
     }
 }

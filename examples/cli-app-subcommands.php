@@ -17,7 +17,7 @@ AppParser::run(
                 new class extends CmdRunner {
 
                     public function run(): void {
-                        $this->getCmd()->help();
+                        $this->runHelp();
                     }
                 }
             )
@@ -26,14 +26,13 @@ AppParser::run(
 
                         public function init(Cmd $cmd): void {
 
-                            $cmd
-                                ->setDescription('This command is used to show something. Take a look at the subcommands.');
+                            $this->description = 'This command is used to show something. Take a look at the subcommands.';
 
                             parent::init($cmd);
                         }
 
                         public function run(): void {
-                            $this->getCmd()->help();
+                            $this->runHelp();
                         }
 
                     })
@@ -42,8 +41,9 @@ AppParser::run(
 
                                 public function init(Cmd $cmd): void {
 
-                                    $cmd
-                                        ->setDescription('Displays hello world.')
+                                    $this->description = 'Displays hello world.';
+
+                                    $this
                                         ->addOption('name:', [
                                             'description' => 'Name option. This option requires a value.',
                                             'isa' => 'string',
@@ -55,9 +55,7 @@ AppParser::run(
 
                                 public function run(): void {
 
-                                    $cmd = $this->getCmd();
-
-                                    $name = $cmd->getProvidedOption('name');
+                                    $name = $this->getProvidedOption('name');
 
                                     self::eol();
                                     self::echo(sprintf('Hello %s!', $name), Color::FOREGROUND_COLOR_CYAN);
@@ -71,8 +69,7 @@ AppParser::run(
 
                                 public function init(Cmd $cmd): void {
 
-                                    $cmd
-                                        ->setDescription('Displays the current php version of your cli.');
+                                    $this->description = 'Displays the current php version of your cli.';
 
                                     parent::init($cmd);
                                 }

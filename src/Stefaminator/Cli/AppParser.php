@@ -18,13 +18,13 @@ class AppParser {
 
             if ($cmd !== null) {
 
-                if ($cmd->handleOptionParseException()) {
+                $runner = $cmd->runner();
+
+                if ($runner->handleOptionParseException()) {
                     return;
                 }
 
-                if (self::callRunner($cmd)) {
-                    return;
-                }
+                $runner->run();
 
             }
         } catch (Exception $e) {
@@ -39,23 +39,6 @@ class AppParser {
     }
 
     /**
-     * @param Cmd $cmd
-     * @return bool
-     * @throws Exception
-     */
-    private static function callRunner(Cmd $cmd): bool {
-
-        $runner = $cmd->getRunner();
-
-        if ($runner !== null) {
-            $runner->run();
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
      * @param App $app
      * @param array $argv
      * @return Cmd
@@ -64,16 +47,18 @@ class AppParser {
 
         $cmd = $app->setup();
 
-        $appspecs = $cmd->getOptionCollection();
+        $runner = $cmd->runner();
+
+        $appspecs = $runner->optionCollection();
 
         $parser = new ContinuousOptionParser($appspecs);
 
         try {
-            $cmd->optionResult = $parser->parse($argv);
+            $runner->optionResult = $parser->parse($argv);
 
         } catch (Exception $e) {
 
-            $cmd->optionParseException = $e;
+            $runner->optionParseException = $e;
 
             return $cmd;
         }
@@ -88,15 +73,17 @@ class AppParser {
 
                 $cmd = $subcommand;
 
+                $runner = $cmd->runner();
+
                 try {
                     self::parseSubcommand($parser, $cmd);
                 } catch (Exception $e) {
-                    $cmd->optionParseException = $e;
+                    $runner->optionParseException = $e;
                     return $cmd;
                 }
 
             } else {
-                $cmd->arguments[] = $parser->advance();
+                $runner->arguments[] = $parser->advance();
             }
         }
 
@@ -127,15 +114,17 @@ class AppParser {
 
         $parser->advance();
 
-        $cmd->optionResult = new OptionResult();
+        $runner = $cmd->runner();
 
-        if (!empty($cmd->optionSpecs)) {
+        $runner->optionResult = new OptionResult();
 
-            $specs = $cmd->getOptionCollection();
+        if (!empty($runner->optSpecs)) {
+
+            $specs = $runner->optionCollection();
 
             $parser->setSpecs($specs);
 
-            $cmd->optionResult = $parser->continueParse();
+            $runner->optionResult = $parser->continueParse();
         }
     }
 
