@@ -5,14 +5,13 @@ namespace Stefaminator\Cli\Test\Resources;
 
 
 use Stefaminator\Cli\App;
-use Stefaminator\Cli\CmdRunner;
+use Stefaminator\Cli\Cmd;
 
 class TestApp2 extends App {
 
-    public function setup(): CmdRunner {
+    public function setup(): Cmd {
 
-        return $this->createRootCmd(
-            new class extends CmdRunner {
+        return (new class extends Cmd {
 
                 public function init(): void {
 
@@ -28,8 +27,6 @@ class TestApp2 extends App {
                             'isa' => 'string',
                             'default' => 'World'
                         ]);
-
-                    parent::init();
                 }
 
                 public function run(): void {

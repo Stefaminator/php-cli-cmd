@@ -344,7 +344,7 @@ final class TestApp1Test extends TestCase {
 
         $this->assertSame('stats', $runner->cmd);
 
-        $this->assertSame('show', $runner->parentNode->cmd);
+        $this->assertSame('show', $runner->parent->cmd);
 
         $this->assertSame(1, $runner->optionResult->count());
 

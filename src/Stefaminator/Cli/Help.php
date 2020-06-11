@@ -4,10 +4,10 @@
 namespace Stefaminator\Cli;
 
 
-class HelpRunner extends CmdRunner {
+class Help extends Cmd {
 
     /**
-     * @var CmdRunner
+     * @var Cmd
      */
     public $runner;
 
@@ -21,9 +21,12 @@ class HelpRunner extends CmdRunner {
 -----------------------------
 EOT;
 
-    public function __construct(CmdRunner $runner) {
+    public function __construct(Cmd $runner) {
         $this->runner = $runner;
         parent::__construct();
+    }
+
+    public function init(): void {
     }
 
 
@@ -55,7 +58,7 @@ EOT;
 
         $arg_usage = $this->getArgumentUsage();
 
-        $has_subcommands = !empty($runner->childNodes);
+        $has_subcommands = !empty($runner->children);
 
         self::eol();
         self::echo('Usage: ', Color::FOREGROUND_COLOR_YELLOW);
@@ -63,7 +66,7 @@ EOT;
 
         self::echo(
             '  ' .
-            ($runner->parentNode !== null ? $runner->cmd : 'command') .
+            ($runner->parent !== null ? $runner->cmd : 'command') .
             ($has_options ? ' [options]' : '') .
             (!empty($arg_usage) ? ' ' . $arg_usage : '') .
             ($has_subcommands ? ' [command]' : '')
@@ -150,7 +153,7 @@ EOT;
 
     public function displaySubcommands(): void {
 
-        $subcommands = $this->runner->childNodes;
+        $subcommands = $this->runner->children;
 
         $has_subcommands = !empty($subcommands);
 

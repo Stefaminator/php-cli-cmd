@@ -11,22 +11,9 @@ use GetOptionKit\OptionResult;
 abstract class App {
 
     /**
-     * @return CmdRunner
+     * @return Cmd
      */
-    abstract public function setup(): CmdRunner;
-
-
-    protected function createRootCmd(CmdRunner $runner): CmdRunner {
-        $runner->init();
-        return $runner;
-    }
-
-    protected function createSubCmd(string $cmd, CmdRunner $runner): CmdRunner {
-        $runner->cmd = $cmd;
-        $runner->init();
-        return $runner;
-    }
-
+    abstract public function setup(): Cmd;
 
     public function run(): void {
         global $argv;
@@ -45,21 +32,20 @@ abstract class App {
             }
         } catch (Exception $e) {
 
-            CmdRunner::eol();
-            CmdRunner::echo('Uups, someting went wrong!', Color::FOREGROUND_COLOR_RED);
-            CmdRunner::eol();
-            CmdRunner::echo($e->getMessage(), Color::FOREGROUND_COLOR_RED);
-            CmdRunner::eol();
+            Cmd::eol();
+            Cmd::echo('Uups, someting went wrong!', Color::FOREGROUND_COLOR_RED);
+            Cmd::eol();
+            Cmd::echo($e->getMessage(), Color::FOREGROUND_COLOR_RED);
+            Cmd::eol();
         }
 
     }
 
     /**
-     * @param App $app
      * @param array $argv
-     * @return CmdRunner
+     * @return Cmd
      */
-    public function parse(array $argv): CmdRunner {
+    public function parse(array $argv): Cmd {
 
         $runner = $this->setup();
 
@@ -81,7 +67,7 @@ abstract class App {
 
             $currentArgument = $parser->getCurrentArgument();
 
-            $subcommand = $runner->getChildNode($currentArgument);
+            $subcommand = $runner->getChild($currentArgument);
 
             if ($subcommand !== null) {
 
@@ -104,21 +90,18 @@ abstract class App {
 
     /**
      * @param ContinuousOptionParser $parser
-     * @param CmdRunner $runner
+     * @param Cmd $runner
      */
-    private function parseSubcommand(ContinuousOptionParser $parser, CmdRunner $runner): void {
+    private function parseSubcommand(ContinuousOptionParser $parser, Cmd $runner): void {
 
         $parser->advance();
 
         $runner->optionResult = new OptionResult();
 
-        if (!empty($runner->optSpecs)) {
+        $specs = $runner->optionCollection();
 
-            $specs = $runner->optionCollection();
+        $parser->setSpecs($specs);
 
-            $parser->setSpecs($specs);
-
-            $runner->optionResult = $parser->continueParse();
-        }
+        $runner->optionResult = $parser->continueParse();
     }
 }

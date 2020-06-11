@@ -4,22 +4,22 @@
 require __DIR__ . '/../vendor/autoload.php';
 
 use Stefaminator\Cli\App;
-use Stefaminator\Cli\CmdRunner;
+use Stefaminator\Cli\Cmd;
 
-(
-    new class extends App {
+(new class extends App {
 
-        public function setup(): CmdRunner {
+    public function setup(): Cmd {
 
-            return $this->createRootCmd(
-                new class extends CmdRunner {
-                    public function run(): void {
-                        echo "Hello World";
-                        echo "\n";
-                    }
-                }
-            );
+        return (new class extends Cmd {
 
-        }
+            public function init(): void {
+            }
+
+            public function run(): void {
+                echo "Hello world";
+                echo "\n";
+            }
+        });
+
     }
-)->run();
+})->run();

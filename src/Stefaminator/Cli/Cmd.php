@@ -8,17 +8,17 @@ use Exception;
 use GetOptionKit\OptionCollection;
 use GetOptionKit\OptionResult;
 
-abstract class CmdRunner {
+abstract class Cmd {
 
     /**
-     * @var CmdRunner
+     * @var Cmd
      */
-    public $parentNode;
+    public $parent;
 
     /**
-     * @var CmdRunner[]
+     * @var Cmd[]
      */
-    public $childNodes = [];
+    public $children = [];
 
     /**
      * @var string
@@ -28,7 +28,7 @@ abstract class CmdRunner {
     /**
      * @var string
      */
-    protected $description = '';
+    private $description = '';
 
     /**
      * @var array
@@ -62,12 +62,34 @@ abstract class CmdRunner {
 
 
     /**
-     * CmdRunner constructor.
+     * The constructor.
+     * @param string|null $cmd
      */
-    public function __construct() {
+    public function __construct(string $cmd = null) {
+        $this->cmd = $cmd;
+        $this->init();
     }
 
-    public function init(): void {
+
+    public function runHelp(): void {
+        (new Help($this))->run();
+    }
+
+    /**
+     * Run the cmd
+     */
+    abstract public function init(): void;
+
+    /**
+     * Run the cmd
+     */
+    abstract public function run(): void;
+
+    /**
+     * Overwrite this method for extended help
+     */
+    public function help(): void {
+
     }
 
     public function description(): string {
@@ -94,11 +116,23 @@ abstract class CmdRunner {
 
         foreach ($specs as $k => $v) {
             $opt = $collection->add($k, $v['description']);
+
             if (array_key_exists('isa', $v)) {
-                $opt->isa($v['isa']);
+                if(array_key_exists('regex', $v) && strtolower($v['isa']) === 'regex') {
+                    $opt->isa('regex', $v['regex']);
+                } else {
+                    $opt->isa($v['isa']);
+                }
             }
+
             if (array_key_exists('default', $v)) {
                 $opt->defaultValue($v['default']);
+                continue;
+            }
+
+            if (array_key_exists('incremental', $v) && $v['incremental'] === true) {
+                $opt->incremental();
+                continue;
             }
         }
 
@@ -124,28 +158,35 @@ abstract class CmdRunner {
         return $r;
     }
 
+    /**
+     * @param string $key
+     * @return bool
+     */
     public function hasProvidedOption(string $key): bool {
         return $this->optionResult !== null && $this->optionResult->has($key);
     }
 
-    public function hasChildNode(string $cmd): bool {
-        return array_key_exists($cmd, $this->childNodes);
+    public function hasChild(string $cmd): bool {
+        return array_key_exists($cmd, $this->children);
     }
 
-    public function getChildNode(string $cmd): ?CmdRunner {
-        if ($this->hasChildNode($cmd)) {
-            return $this->childNodes[$cmd];
+    public function getChild(string $cmd): ?self {
+        if ($this->hasChild($cmd)) {
+            return $this->children[$cmd];
         }
         return null;
     }
 
+    public function addChild(Cmd $runner): self {
 
-    public function addChildNode(CmdRunner $runner): self {
+        $runner->parent = $this;
+        $this->children[$runner->cmd] = $runner;
 
-        $runner->parentNode = $this;
+        return $this;
+    }
 
-        $this->childNodes[$runner->cmd] = $runner;
-
+    protected function setDescription(string $description): self {
+        $this->description = $description;
         return $this;
     }
 
@@ -187,23 +228,6 @@ abstract class CmdRunner {
         $this->runHelp();
 
         return true;
-    }
-
-
-    public function runHelp(): void {
-        (new HelpRunner($this))->run();
-    }
-
-    /**
-     * Run the cmd
-     */
-    abstract public function run(): void;
-
-    /**
-     * Overwrite this method for extended help
-     */
-    public function help(): void {
-
     }
 
 
