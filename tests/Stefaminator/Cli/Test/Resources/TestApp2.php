@@ -5,17 +5,16 @@ namespace Stefaminator\Cli\Test\Resources;
 
 
 use Stefaminator\Cli\App;
-use Stefaminator\Cli\Cmd;
 use Stefaminator\Cli\CmdRunner;
 
 class TestApp2 extends App {
 
-    public function setup(): Cmd {
+    public function setup(): CmdRunner {
 
-        return Cmd::createRootCmd(
+        return $this->createRootCmd(
             new class extends CmdRunner {
 
-                public function init(Cmd $cmd): void {
+                public function init(): void {
 
                     $this
                         ->addOption('h|help', [
@@ -30,7 +29,7 @@ class TestApp2 extends App {
                             'default' => 'World'
                         ]);
 
-                    parent::init($cmd);
+                    parent::init();
                 }
 
                 public function run(): void {

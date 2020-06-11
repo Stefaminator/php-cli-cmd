@@ -4,7 +4,6 @@ namespace Stefaminator\Cli\Test;
 
 use Exception;
 use \PHPUnit\Framework\TestCase;
-use Stefaminator\Cli\AppParser;
 use Stefaminator\Cli\Test\Resources\TestApp1;
 
 
@@ -16,8 +15,7 @@ final class TestApp1Test extends TestCase {
         $argv = explode(' ', 'testapp1.php show stats --start=2020-11-11 -v arg1 arg2 arg3');
 
         ob_start();
-        $app = new TestApp1();
-        AppParser::run($app);
+        (new TestApp1())->run();
         $out = ob_get_clean();
         
         $expected = "\e[1;37m\e[45m2020-11-11\e[0m
@@ -44,8 +42,7 @@ final class TestApp1Test extends TestCase {
         $argv = explode(' ', 'testapp1.php show exception');
 
         ob_start();
-        $app = new TestApp1();
-        AppParser::run($app);
+        (new TestApp1())->run();
         $out = ob_get_clean();
 
         $expected = "
@@ -62,8 +59,7 @@ final class TestApp1Test extends TestCase {
         $argv = explode(' ', 'testapp1.php help');
 
         ob_start();
-        $app = new TestApp1();
-        AppParser::run($app);
+        (new TestApp1())->run();
         $out = ob_get_clean();
 
         $expected = "
@@ -97,8 +93,7 @@ final class TestApp1Test extends TestCase {
         $argv = explode(' ', 'testapp1.php show hello -h');
 
         ob_start();
-        $app = new TestApp1();
-        AppParser::run($app);
+        (new TestApp1())->run();
         $out = ob_get_clean();
 
         $expected = "
@@ -129,8 +124,7 @@ final class TestApp1Test extends TestCase {
         $argv = explode(' ', 'testapp1.php greetings --help');
 
         ob_start();
-        $app = new TestApp1();
-        AppParser::run($app);
+        (new TestApp1())->run();
         $out = ob_get_clean();
 
         $expected = "
@@ -163,8 +157,7 @@ final class TestApp1Test extends TestCase {
         $argv = explode(' ', 'testapp1.php --invalid');
 
         ob_start();
-        $app = new TestApp1();
-        AppParser::run($app);
+        (new TestApp1())->run();
         $out = ob_get_clean();
 
         $expected = "
@@ -200,11 +193,9 @@ final class TestApp1Test extends TestCase {
 
         $argv = ['example2.php'];
 
-        $cmd = AppParser::parse($app, $argv);
+        $runner = $app->parse($argv);
 
-        $runner = $cmd->runner();
-
-        $this->assertSame('__root', $cmd->cmd);
+        $this->assertNull($runner->cmd);
 
         $this->assertSame(0, $runner->optionResult->count());
 
@@ -223,11 +214,9 @@ final class TestApp1Test extends TestCase {
 
         $argv = ['example2.php', 'myarg'];
 
-        $cmd = AppParser::parse($app, $argv);
+        $runner = $app->parse($argv);
 
-        $runner = $cmd->runner();
-
-        $this->assertSame('__root', $cmd->cmd);
+        $this->assertNull($runner->cmd);
 
         $this->assertSame(0, $runner->optionResult->count());
 
@@ -240,15 +229,13 @@ final class TestApp1Test extends TestCase {
 
         $argv = ['example2.php', '-h', 'myarg'];
 
-        $cmd = AppParser::parse($app, $argv);
+        $runner = $app->parse($argv);
 
-        $runner = $cmd->runner();
-
-        $this->assertSame('__root', $cmd->cmd);
+        $this->assertNull($runner->cmd);
 
         $this->assertTrue($runner->optionResult->get('help'));
 
-        $this->assertSame(['myarg'], $cmd->runner()->arguments);
+        $this->assertSame(['myarg'], $runner->arguments);
     }
 
     public function testMainHelpFlag(): void {
@@ -256,11 +243,9 @@ final class TestApp1Test extends TestCase {
 
         $argv = ['example2.php', '--help'];
 
-        $cmd = AppParser::parse($app, $argv);
+        $runner = $app->parse($argv);
 
-        $runner = $cmd->runner();
-
-        $this->assertSame('__root', $cmd->cmd);
+        $this->assertNull($runner->cmd);
 
         $this->assertTrue($runner->optionResult->get('help'));
 
@@ -271,11 +256,9 @@ final class TestApp1Test extends TestCase {
 
         $argv = ['example2.php', 'help', 'list'];
 
-        $cmd = AppParser::parse($app, $argv);
+        $runner = $app->parse($argv);
 
-        $runner = $cmd->runner();
-
-        $this->assertSame('help', $cmd->cmd);
+        $this->assertSame('help', $runner->cmd);
 
         $this->assertSame(0, $runner->optionResult->count());
 
@@ -287,11 +270,9 @@ final class TestApp1Test extends TestCase {
 
         $argv = ['example2.php', 'list', '--xml'];
 
-        $cmd = AppParser::parse($app, $argv);
+        $runner = $app->parse($argv);
 
-        $runner = $cmd->runner();
-
-        $this->assertSame('list', $cmd->cmd);
+        $this->assertSame('list', $runner->cmd);
 
         $this->assertSame(2, $runner->optionResult->count());
 
@@ -308,11 +289,9 @@ final class TestApp1Test extends TestCase {
 
         $argv = ['example2.php', 'list', '--format', 'json'];
 
-        $cmd = AppParser::parse($app, $argv);
+        $runner = $app->parse($argv);
 
-        $runner = $cmd->runner();
-
-        $this->assertSame('list', $cmd->cmd);
+        $this->assertSame('list', $runner->cmd);
 
         $this->assertSame(1, $runner->optionResult->count());
 
@@ -326,11 +305,9 @@ final class TestApp1Test extends TestCase {
 
         $argv = ['example2.php', 'list', '--invalid'];
 
-        $cmd = AppParser::parse($app, $argv);
+        $runner = $app->parse($argv);
 
-        $runner = $cmd->runner();
-
-        $this->assertSame('list', $cmd->cmd);
+        $this->assertSame('list', $runner->cmd);
 
         $this->assertSame(0, $runner->optionResult->count());
 
@@ -349,11 +326,9 @@ final class TestApp1Test extends TestCase {
 
         $argv = ['example2.php', 'show'];
 
-        $cmd = AppParser::parse($app, $argv);
+        $runner = $app->parse($argv);
 
-        $runner = $cmd->runner();
-
-        $this->assertSame('show', $cmd->cmd);
+        $this->assertSame('show', $runner->cmd);
 
         $this->assertSame(0, $runner->optionResult->count());
 
@@ -365,13 +340,11 @@ final class TestApp1Test extends TestCase {
 
         $argv = ['example2.php', 'show', 'stats', '--start', '2019-01-01'];
 
-        $cmd = AppParser::parse($app, $argv);
+        $runner = $app->parse($argv);
 
-        $runner = $cmd->runner();
+        $this->assertSame('stats', $runner->cmd);
 
-        $this->assertSame('stats', $cmd->cmd);
-
-        $this->assertSame('show', $cmd->parent->cmd);
+        $this->assertSame('show', $runner->parentNode->cmd);
 
         $this->assertSame(1, $runner->optionResult->count());
 

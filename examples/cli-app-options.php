@@ -4,19 +4,17 @@
 require __DIR__ . '/../vendor/autoload.php';
 
 use Stefaminator\Cli\App;
-use Stefaminator\Cli\AppParser;
-use Stefaminator\Cli\Cmd;
 use Stefaminator\Cli\CmdRunner;
 use Stefaminator\Cli\Color;
 
-AppParser::run(
+(
     (new class extends App {
 
-        public function setup(): Cmd {
-            return Cmd::createRootCmd(
+        public function setup(): CmdRunner {
+            return $this->createRootCmd(
                 new class extends CmdRunner {
 
-                    public function init(Cmd $cmd): void {
+                    public function init(): void {
 
                         $this
                             ->addOption('h|help', [
@@ -31,7 +29,7 @@ AppParser::run(
                                 'default' => 'World'
                             ]);
 
-                        parent::init($cmd);
+                        parent::init();
                     }
 
                     public function run(): void {
@@ -103,4 +101,4 @@ AppParser::run(
         }
 
     })
-);
+)->run();

@@ -11,9 +11,19 @@ use GetOptionKit\OptionResult;
 abstract class CmdRunner {
 
     /**
-     * @var Cmd
+     * @var CmdRunner
      */
-    private $cmd;
+    public $parentNode;
+
+    /**
+     * @var CmdRunner[]
+     */
+    public $childNodes = [];
+
+    /**
+     * @var string
+     */
+    public $cmd;
 
     /**
      * @var string
@@ -29,7 +39,6 @@ abstract class CmdRunner {
      * @var string[]
      */
     public $arguments = [];
-
 
     /**
      * @var array
@@ -54,28 +63,11 @@ abstract class CmdRunner {
 
     /**
      * CmdRunner constructor.
-     * @param Cmd $cmd
      */
-    public function __construct(Cmd $cmd = null) {
-        if ($cmd !== null) {
-            $this->cmd = $cmd;
-            return;
-        }
-        $this->cmd = new Cmd('__root', $this);
+    public function __construct() {
     }
 
-    /**
-     * @param Cmd $cmd
-     */
-    public function init(Cmd $cmd): void {
-        $this->cmd = $cmd;
-    }
-
-    /**
-     * @return Cmd
-     */
-    public function cmd(): Cmd {
-        return $this->cmd;
+    public function init(): void {
     }
 
     public function description(): string {
@@ -136,6 +128,26 @@ abstract class CmdRunner {
         return $this->optionResult !== null && $this->optionResult->has($key);
     }
 
+    public function hasChildNode(string $cmd): bool {
+        return array_key_exists($cmd, $this->childNodes);
+    }
+
+    public function getChildNode(string $cmd): ?CmdRunner {
+        if ($this->hasChildNode($cmd)) {
+            return $this->childNodes[$cmd];
+        }
+        return null;
+    }
+
+
+    public function addChildNode(CmdRunner $runner): self {
+
+        $runner->parentNode = $this;
+
+        $this->childNodes[$runner->cmd] = $runner;
+
+        return $this;
+    }
 
     protected function addOption(string $specString, array $config): self {
 
@@ -179,7 +191,7 @@ abstract class CmdRunner {
 
 
     public function runHelp(): void {
-        (new HelpRunner($this->cmd))->run();
+        (new HelpRunner($this))->run();
     }
 
     /**

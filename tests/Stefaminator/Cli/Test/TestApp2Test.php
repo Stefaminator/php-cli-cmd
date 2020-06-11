@@ -5,7 +5,6 @@ namespace Stefaminator\Cli\Test;
 
 
 use PHPUnit\Framework\TestCase;
-use Stefaminator\Cli\AppParser;
 use Stefaminator\Cli\Test\Resources\TestApp2;
 
 final class TestApp2Test extends TestCase {
@@ -15,11 +14,9 @@ final class TestApp2Test extends TestCase {
 
         $argv = ['testapp2.php'];
 
-        $cmd = AppParser::parse($app, $argv);
+        $runner = $app->parse($argv);
 
-        $runner = $cmd->runner();
-
-        $this->assertSame('__root', $cmd->cmd);
+        $this->assertNull($runner->cmd);
 
         /**
          * should be 1 because name-option has a default value
@@ -34,11 +31,9 @@ final class TestApp2Test extends TestCase {
 
         $argv = ['testapp2.php', 'myarg'];
 
-        $cmd = AppParser::parse($app, $argv);
+        $runner = $app->parse($argv);
 
-        $runner = $cmd->runner();
-
-        $this->assertSame('__root', $cmd->cmd);
+        $this->assertNull($runner->cmd);
 
         /**
          * should be 1 because name-option has a default value
@@ -53,11 +48,9 @@ final class TestApp2Test extends TestCase {
 
         $argv = ['testapp2.php', '-v', 'myarg'];
 
-        $cmd = AppParser::parse($app, $argv);
+        $runner = $app->parse($argv);
 
-        $runner = $cmd->runner();
-
-        $this->assertSame('__root', $cmd->cmd);
+        $this->assertNull($runner->cmd);
 
         /**
          * should be 2 because name-option has a default value
@@ -73,11 +66,9 @@ final class TestApp2Test extends TestCase {
 
         $argv = ['testapp2.php', '-v', '--name=jaqueline', 'myarg'];
 
-        $cmd = AppParser::parse($app, $argv);
+        $runner = $app->parse($argv);
 
-        $runner = $cmd->runner();
-
-        $this->assertSame('__root', $cmd->cmd);
+        $this->assertNull($runner->cmd);
 
         /**
          * should be 2 because name-option has a default value
@@ -93,11 +84,9 @@ final class TestApp2Test extends TestCase {
 
         $argv = ['testapp2.php', '-v', '--name=jaqueline', 'bla', 'blu'];
 
-        $cmd = AppParser::parse($app, $argv);
+        $runner = $app->parse($argv);
 
-        $runner = $cmd->runner();
-
-        $this->assertSame('__root', $cmd->cmd);
+        $this->assertNull($runner->cmd);
 
         /**
          * should be 2 because name-option has a default value

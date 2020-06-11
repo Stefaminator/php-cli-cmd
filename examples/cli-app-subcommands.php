@@ -4,88 +4,84 @@
 require __DIR__ . '/../vendor/autoload.php';
 
 use Stefaminator\Cli\App;
-use Stefaminator\Cli\AppParser;
-use Stefaminator\Cli\Cmd;
 use Stefaminator\Cli\CmdRunner;
 use Stefaminator\Cli\Color;
 
-AppParser::run(
-    new class extends App {
+(
+new class extends App {
 
-        public function setup(): Cmd {
-            return Cmd::createRootCmd(
-                new class extends CmdRunner {
+    public function setup(): CmdRunner {
+        return $this->createRootCmd(new class extends CmdRunner {
+
+            public function run(): void {
+                $this->runHelp();
+            }
+        })
+            ->addChildNode(
+                $this->createSubCmd('show', new class extends CmdRunner {
+
+                    public function init(): void {
+
+                        $this->description = 'This command is used to show something. Take a look at the subcommands.';
+
+                        parent::init();
+                    }
 
                     public function run(): void {
                         $this->runHelp();
                     }
-                }
-            )
-                ->addSubCmd(
-                    Cmd::createSubCmd('show', new class extends CmdRunner {
 
-                        public function init(Cmd $cmd): void {
+                })
+                    ->addChildNode(
+                        $this->createSubCmd('hello', new class extends CmdRunner {
 
-                            $this->description = 'This command is used to show something. Take a look at the subcommands.';
+                            public function init(): void {
 
-                            parent::init($cmd);
-                        }
+                                $this->description = 'Displays hello world.';
 
-                        public function run(): void {
-                            $this->runHelp();
-                        }
+                                $this
+                                    ->addOption('name:', [
+                                        'description' => 'Name option. This option requires a value.',
+                                        'isa' => 'string',
+                                        'default' => 'World'
+                                    ]);
 
-                    })
-                        ->addSubCmd(
-                            Cmd::createSubCmd('hello', new class extends CmdRunner {
+                                parent::init();
+                            }
 
-                                public function init(Cmd $cmd): void {
+                            public function run(): void {
 
-                                    $this->description = 'Displays hello world.';
+                                $name = $this->getProvidedOption('name');
 
-                                    $this
-                                        ->addOption('name:', [
-                                            'description' => 'Name option. This option requires a value.',
-                                            'isa' => 'string',
-                                            'default' => 'World'
-                                        ]);
+                                self::eol();
+                                self::echo(sprintf('Hello %s!', $name), Color::FOREGROUND_COLOR_CYAN);
+                                self::eol();
+                                self::eol();
+                            }
+                        })
+                    )
+                    ->addChildNode(
+                        $this->createSubCmd('phpversion', new class extends CmdRunner {
 
-                                    parent::init($cmd);
-                                }
+                            public function init(): void {
 
-                                public function run(): void {
+                                $this->description = 'Displays the current php version of your cli.';
 
-                                    $name = $this->getProvidedOption('name');
+                                parent::init();
+                            }
 
-                                    self::eol();
-                                    self::echo(sprintf('Hello %s!', $name), Color::FOREGROUND_COLOR_CYAN);
-                                    self::eol();
-                                    self::eol();
-                                }
-                            })
-                        )
-                        ->addSubCmd(
-                            Cmd::createSubCmd('phpversion', new class extends CmdRunner {
-
-                                public function init(Cmd $cmd): void {
-
-                                    $this->description = 'Displays the current php version of your cli.';
-
-                                    parent::init($cmd);
-                                }
-
-                                public function run(): void {
-                                    self::eol();
-                                    self::echo('  Your PHP version is:', Color::FOREGROUND_COLOR_YELLOW);
-                                    self::eol();
-                                    self::echo('  ' . PHP_VERSION);
-                                    self::eol();
-                                    self::eol();
-                                }
-                            })
-                        )
-                );
-        }
-
+                            public function run(): void {
+                                self::eol();
+                                self::echo('  Your PHP version is:', Color::FOREGROUND_COLOR_YELLOW);
+                                self::eol();
+                                self::echo('  ' . PHP_VERSION);
+                                self::eol();
+                                self::eol();
+                            }
+                        })
+                    )
+            );
     }
-);
+
+}
+)->run();

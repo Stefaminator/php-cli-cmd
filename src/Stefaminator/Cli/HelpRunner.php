@@ -6,6 +6,11 @@ namespace Stefaminator\Cli;
 
 class HelpRunner extends CmdRunner {
 
+    /**
+     * @var CmdRunner
+     */
+    public $runner;
+
     public static $header = <<<EOT
 
               o       
@@ -15,6 +20,11 @@ class HelpRunner extends CmdRunner {
           Need help?
 -----------------------------
 EOT;
+
+    public function __construct(CmdRunner $runner) {
+        $this->runner = $runner;
+        parent::__construct();
+    }
 
 
     public function run(): void {
@@ -38,14 +48,14 @@ EOT;
 
     public function displayUsage(): void {
 
-        $cmd = $this->cmd();
+        $runner = $this->runner;
 
-        $oc = $cmd->runner()->optionCollection();
+        $oc = $runner->optionCollection();
         $has_options = !empty($oc->options);
 
         $arg_usage = $this->getArgumentUsage();
 
-        $has_subcommands = !empty($cmd->subcommands);
+        $has_subcommands = !empty($runner->childNodes);
 
         self::eol();
         self::echo('Usage: ', Color::FOREGROUND_COLOR_YELLOW);
@@ -53,7 +63,7 @@ EOT;
 
         self::echo(
             '  ' .
-            ($cmd->parent !== null ? $cmd->cmd : 'command') .
+            ($runner->parentNode !== null ? $runner->cmd : 'command') .
             ($has_options ? ' [options]' : '') .
             (!empty($arg_usage) ? ' ' . $arg_usage : '') .
             ($has_subcommands ? ' [command]' : '')
@@ -64,7 +74,7 @@ EOT;
 
     private function getArgumentUsage() {
 
-        $argSpecs = $this->cmd()->runner()->argSpecs();
+        $argSpecs = $this->runner->argSpecs();
 
         $arg_usage = [];
         foreach ($argSpecs as $k => $v) {
@@ -76,7 +86,7 @@ EOT;
 
     public function displayArguments(): void {
 
-        $argSpecs = $this->cmd()->runner()->argSpecs();
+        $argSpecs = $this->runner->argSpecs();
 
         $has_arguments = !empty($argSpecs);
 
@@ -104,7 +114,7 @@ EOT;
 
     public function displayOptions(): void {
 
-        $oc = $this->cmd()->runner()->optionCollection();
+        $oc = $this->runner->optionCollection();
         $has_options = !empty($oc->options);
 
         if ($has_options) {
@@ -140,9 +150,9 @@ EOT;
 
     public function displaySubcommands(): void {
 
-        $cmd = $this->cmd();
+        $subcommands = $this->runner->childNodes;
 
-        $has_subcommands = !empty($cmd->subcommands);
+        $has_subcommands = !empty($subcommands);
 
         if ($has_subcommands) {
 
@@ -150,12 +160,12 @@ EOT;
             self::echo('Available commands: ', Color::FOREGROUND_COLOR_YELLOW);
             self::eol();
 
-            foreach ($cmd->subcommands as $_cmd) {
+            foreach ($subcommands as $_runner) {
 
-                $s = '  ' . str_pad($_cmd->cmd, 20, ' ');
+                $s = '  ' . str_pad($_runner->cmd, 20, ' ');
                 self::echo($s, Color::FOREGROUND_COLOR_GREEN);
 
-                $s = ' ' . $_cmd->runner()->description();
+                $s = ' ' . $_runner->description();
                 self::echo($s);
 
                 self::eol();
@@ -165,16 +175,8 @@ EOT;
 
     public function displayHelp(): void {
 
-        $cmd = $this->cmd();
-
-        $runner = $cmd->runner();
-
-        if ($runner === null) {
-            return;
-        }
-
         ob_start();
-        $runner->help();
+        $this->runner->help();
         $help = ob_get_clean();
 
         if (empty($help)) {

@@ -4,16 +4,14 @@
 require __DIR__ . '/../vendor/autoload.php';
 
 use Stefaminator\Cli\App;
-use Stefaminator\Cli\AppParser;
-use Stefaminator\Cli\Cmd;
 use Stefaminator\Cli\CmdRunner;
 
-AppParser::run(
+(
     new class extends App {
 
-        public function setup(): Cmd {
+        public function setup(): CmdRunner {
 
-            return Cmd::createRootCmd(
+            return $this->createRootCmd(
                 new class extends CmdRunner {
                     public function run(): void {
                         echo "Hello World";
@@ -24,4 +22,4 @@ AppParser::run(
 
         }
     }
-);
+)->run();

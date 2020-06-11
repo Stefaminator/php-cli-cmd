@@ -6,26 +6,25 @@ namespace Stefaminator\Cli\Test\Resources;
 use Exception;
 use RuntimeException;
 use Stefaminator\Cli\App;
-use Stefaminator\Cli\Cmd;
 use Stefaminator\Cli\CmdRunner;
 use Stefaminator\Cli\Color;
 use Stefaminator\Cli\Progress;
 
 class TestApp1 extends App {
 
-    public function setup(): Cmd {
+    public function setup(): CmdRunner {
 
-        return Cmd::createRootCmd(
+        return $this->createRootCmd(
             new class extends CmdRunner {
 
-                public function init(Cmd $cmd): void {
+                public function init(): void {
 
                     $this
                         ->addOption('h|help', [
                             'description' => 'Display the command help'
                         ]);
 
-                    parent::init($cmd);
+                    parent::init();
                 }
 
                 public function run(): void {
@@ -38,10 +37,10 @@ class TestApp1 extends App {
                 }
             }
         )
-            ->addSubCmd(
-                Cmd::createSubCmd('list', new class extends CmdRunner {
+            ->addChildNode(
+                $this->createSubCmd('list', new class extends CmdRunner {
 
-                    public function init(Cmd $cmd): void {
+                    public function init(): void {
 
                         $this
                             ->addOption('xml', [
@@ -53,7 +52,7 @@ class TestApp1 extends App {
                                 'default' => 'txt'
                             ]);
 
-                        parent::init($cmd);
+                        parent::init();
                     }
 
                     public function run(): void {
@@ -74,8 +73,8 @@ class TestApp1 extends App {
                     }
                 })
             )
-            ->addSubCmd(
-                Cmd::createSubCmd('show', new class extends CmdRunner {
+            ->addChildNode(
+                $this->createSubCmd('show', new class extends CmdRunner {
 
                     public function run(): void {
 
@@ -102,10 +101,10 @@ class TestApp1 extends App {
 
                     }
                 })
-                    ->addSubCmd(
-                        Cmd::createSubCmd('hello', new class extends CmdRunner {
+                    ->addChildNode(
+                        $this->createSubCmd('hello', new class extends CmdRunner {
 
-                            public function init(Cmd $cmd): void {
+                            public function init(): void {
 
                                 $this
                                     ->addOption('h|help', ['description' => 'Display the command help'])
@@ -116,7 +115,7 @@ class TestApp1 extends App {
                                         'required' => true
                                     ]);
 
-                                parent::init($cmd);
+                                parent::init();
                             }
 
                             public function run(): void {
@@ -148,10 +147,10 @@ class TestApp1 extends App {
                             }
                         })
                     )
-                    ->addSubCmd(
-                        Cmd::createSubCmd('stats', new class extends CmdRunner {
+                    ->addChildNode(
+                        $this->createSubCmd('stats', new class extends CmdRunner {
 
-                            public function init(Cmd $cmd): void {
+                            public function init(): void {
 
                                 $this
                                     ->addOption('v|verbose', [
@@ -162,7 +161,7 @@ class TestApp1 extends App {
                                         'isa' => 'date',
                                     ]);
 
-                                parent::init($cmd);
+                                parent::init();
                             }
 
                             public function run(): void {
@@ -206,8 +205,8 @@ class TestApp1 extends App {
                             }
                         })
                     )
-                    ->addSubCmd(
-                        Cmd::createSubCmd('exception', new class extends CmdRunner {
+                    ->addChildNode(
+                        $this->createSubCmd('exception', new class extends CmdRunner {
 
                             public function run(): void {
                                 throw new RuntimeException('fail');
@@ -215,10 +214,10 @@ class TestApp1 extends App {
                         })
                     )
             )
-            ->addSubCmd(
-                Cmd::createSubCmd('greetings', new class extends CmdRunner {
+            ->addChildNode(
+                $this->createSubCmd('greetings', new class extends CmdRunner {
 
-                    public function init(Cmd $cmd): void {
+                    public function init(): void {
 
                         $this->description = 'Display some greetings.';
 
@@ -237,7 +236,7 @@ class TestApp1 extends App {
                                 'description' => 'Displays help for this command.'
                             ]);
 
-                        parent::init($cmd);
+                        parent::init();
                     }
 
                     public function run(): void {
@@ -249,19 +248,19 @@ class TestApp1 extends App {
                     }
                 })
             )
-            ->addSubCmd(
-                Cmd::createSubCmd('help', new class extends CmdRunner {
+            ->addChildNode(
+                $this->createSubCmd('help', new class extends CmdRunner {
 
-                    public function init(Cmd $cmd): void {
+                    public function init(): void {
 
                         $this->description = 'Displays help for this command.';
 
-                        parent::init($cmd);
+                        parent::init();
                     }
 
                     public function run(): void {
 
-                        $this->cmd()->parent->runner()->runHelp();
+                        $this->parentNode->runHelp();
                     }
                 })
             );
