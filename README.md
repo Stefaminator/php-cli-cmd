@@ -1,6 +1,10 @@
 # php-cli-cmd
 
-The PHP CLI CMD library. Helps you to create CLI Apps fast and easy. 
+**The PHP CLI CMD library. Helps you create well-structured PHP CLI apps quickly and easily.**
+
+
+This library supports setting up options and arguments,  subcommands and offers an integrated command help. 
+Use the color or progress bar helpers to visualize important outputs.
 
 ![Packagist PHP Version Support](https://img.shields.io/packagist/php-v/stefaminator/php-cli-cmd)
 [![Latest Stable Version](https://poser.pugx.org/stefaminator/php-cli-cmd/v)](https://packagist.org/packages/stefaminator/php-cli-cmd)
@@ -9,13 +13,20 @@ The PHP CLI CMD library. Helps you to create CLI Apps fast and easy.
 [![Code Coverage](https://scrutinizer-ci.com/g/Stefaminator/php-cli-cmd/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/Stefaminator/php-cli-cmd/?branch=master)
 ![Packagist License](https://img.shields.io/packagist/l/stefaminator/php-cli-cmd)
 
+## Table of Contents
+
+ - [Getting started](#getting-started)
+ - [Build your first app](#build-your-first-app)
+ - [Options](#options)
+ - [Arguments](#arguments)
+
 ## Getting started
 
 The simplest way of installing ist to refer to the sources on packagist.
 
     composer require stefaminator/php-cli-cmd
 
-## Build your first App
+## Build your first app
 
 Let's start by creating a new php file called `cli-app-helloworld.php` and require composers autoloader.
 
@@ -121,14 +132,13 @@ and one name option to be able to say hello to a given name (i.e. `--name=Stefam
 
 Options should be added within the `Cmd::init()` method according to the following scheme:
 
-    $this->addOption(string $specString, array $config);
+    $this->addOption($specString, $configArray);
 
 The `addOption()` method is chainable, so you may add options like this:
 
     $this
-        ->addOption($specString1, $config1)
-        ->addOption($specString2, $config2)
-        ->addOption($specString3, $config3);
+        ->addOption($specString1, $configArray1)
+        ->addOption($specString2, $configArray2);
         
 Please note that option parsing based on [https://github.com/c9s/GetOptionKit](https://github.com/c9s/GetOptionKit). 
 Both the option specs and the option value validation based on that great library. So maybe check out their 
@@ -136,7 +146,7 @@ documentation first if you have any questions or issues with these features.
         
 **Option specs**
 
-Please use the option `$specString` (first argument of `addOption` method) to define the options 
+Use the `$specString` (first argument of `addOption` method) to define the options 
 long and/or short name and use the qualifiers `:`, `+` and `?` 
 to determine if it should be a flag, required, multiple or optional value.
 
@@ -149,10 +159,10 @@ to determine if it should be a flag, required, multiple or optional value.
 
 **Option config**
 
-Please specify more option attributes via option config array. Here is a list of possible keys:
+Specify more option attributes via `$configArray` (second argument of `addOption` method). Here is a list of possible keys:
 
     description    string    The description string is used in builtin command help
-    isa            string    The option value type to validate the input
+    isa            string    The option value type to validate the input (see: Option value validation)
     regex          string    A regex to validate the input value against (in case of isa=regex)
     default        mixed     The options default value
     incremental    bool      Typically used for verbose mode (with -vvv the value will be 3)
@@ -192,16 +202,64 @@ The values of provided options may be catched within the `Cmd::run()` method usi
      * @param string $key Long option name if present, otherwise short option char
      * @return mixed
      */
-    $this->getProvidedOption($key);
+    $value = $this->getProvidedOption($key);
     
     /**
      * Returns an array of key value pairs with all present option values.
      * @return array
      */
-    $this->getAllProvidedOptions();
+    $all = $this->getAllProvidedOptions();
         
     /**
      * Holds the original OptionResult of c9s/GetOptionKit library
      * @var OptionResult|null
      */
     $this->optionResult;
+    
+    
+## Arguments
+
+Arguments are generally always accepted and not validated by configuration. Any endpoint has
+to decide if it processes arguments and must validate them by itself.
+However, if you accept arguments you may want to make them visible and explained in help output.
+Therefore, and only therefore, you may declare it like explained here.
+    
+### Adding arguments
+
+Arguments should be added within the `Cmd::init()` method according to the following scheme:
+
+    $this->addArgument($specString, $configArray);
+
+
+The `addArgument()` method is chainable, so you may combine it with `addOption()` and add arguments like this:
+
+    $this
+        ->addOption($specString1, $configArray1)
+        ->addOption($specString2, $configArray2)
+        ->addArgument($specString3, $configArray3);
+
+**Argument specs**
+
+Use the `$specString` (first argument of `addArgument` method) to give the argument a meaningful name.
+
+**Argument config**
+
+Specify more argument attributes via `$configArray` (second argument of `addArgument` method). 
+Here is a list of possible keys:
+
+    description    string    The description string is used in builtin command help
+    multiple       bool      The multiple flag is used in builtin command help to mark it as multiple (works only for the last declared arg)
+    
+    
+### Get provided arguments at runtime
+
+The values of provided options may be catched within the `Cmd::run()` method using one of the following calls:
+
+    /**
+     * Returns an indexed array of provided arguments.
+     * @return array
+     */
+    $args = $this->arguments();
+    
+As explained above, it doesn't matter if the arguments had been declared via `addArgument()`. 
+In contrast to options, which are only present after successful validation, arguments are present whenever they have been typed.
