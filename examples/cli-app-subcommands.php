@@ -44,6 +44,9 @@ use Stefaminator\Cli\Color;
                             ->setDescription(
                                 'Displays hello world.'
                             )
+                            ->addOption('h|help', [
+                                'description' => 'Displays the command help.'
+                            ])
                             ->addOption('name:', [
                                 'description' => 'Name option. This option requires a value.',
                                 'isa' => 'string',
@@ -52,6 +55,11 @@ use Stefaminator\Cli\Color;
                     }
 
                     public function run(): void {
+
+                        if ($this->hasProvidedOption('help')) {
+                            $this->runHelp();
+                            return;
+                        }
 
                         $name = $this->getProvidedOption('name');
 
@@ -66,12 +74,21 @@ use Stefaminator\Cli\Color;
                     public function init(): void {
 
                         $this
+                            ->addOption('h|help', [
+                                'description' => 'Displays the command help.'
+                            ])
                             ->setDescription(
                                 'Displays the current php version of your cli.'
                             );
                     }
 
                     public function run(): void {
+
+                        if ($this->hasProvidedOption('help')) {
+                            $this->runHelp();
+                            return;
+                        }
+
                         self::eol();
                         self::echo('  Your PHP version is:', Color::FOREGROUND_COLOR_YELLOW);
                         self::eol();

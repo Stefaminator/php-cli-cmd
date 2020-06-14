@@ -19,6 +19,7 @@ Use the color or progress bar helpers to visualize important outputs.
  - [Build your first app](#build-your-first-app)
  - [Options](#options)
  - [Arguments](#arguments)
+ - [Subcommands](#subcommands)
 
 ## Getting started
 
@@ -263,3 +264,122 @@ The values of provided options may be catched within the `Cmd::run()` method usi
     
 As explained above, it doesn't matter if the arguments had been declared via `addArgument()`. 
 In contrast to options, which are only present after successful validation, arguments are present whenever they have been typed.
+
+## Subcommands
+
+The following example (`cli-app-subcommands.php`) shows one root command that outputs the root command help, 
+one subcommand `show` that outputs the command help for the show command, 
+and two subcommands for the `show` command (`hello` and `phpversion`).
+
+    php cli-app-subcommands.php                      // Outputs command help for root command
+    php cli-app-subcommands.php show                 // Outputs command help for the "show" command
+    php cli-app-subcommands.php show hello           // Outputs "Hello World"
+    php cli-app-subcommands.php show hello -h        // Outputs command help for the "show hello" command
+    php cli-app-subcommands.php show hello --name=me // Outputs "Hello me"
+    php cli-app-subcommands.php show phpversion      // Outputs the current php version of your cli
+
+Ok, here is the code:
+
+    <?php
+    
+    use Stefaminator\Cli\App;
+    use Stefaminator\Cli\Cmd;
+    use Stefaminator\Cli\Color;
+    
+    (new class extends App {
+    
+        public function setup(): Cmd {
+            return (
+            new class extends Cmd {
+    
+                public function init(): void {
+                }
+    
+                public function run(): void {
+                    $this->runHelp();
+                }
+            })
+                ->addChild((new class('show') extends Cmd {
+    
+                    public function init(): void {
+    
+                        $this
+                            ->setDescription(
+                                'This command is used to show something. Take a look at the subcommands.'
+                            );
+    
+                    }
+    
+                    public function run(): void {
+                        $this->runHelp();
+                    }
+    
+                })
+                    ->addChild((new class('hello') extends Cmd {
+    
+                        public function init(): void {
+    
+                            $this
+                                ->setDescription(
+                                    'Displays hello world.'
+                                )
+                                ->addOption('h|help', [
+                                    'description' => 'Displays the command help.'
+                                ])
+                                ->addOption('name:', [
+                                    'description' => 'Name option. This option requires a value.',
+                                    'isa' => 'string',
+                                    'default' => 'World'
+                                ]);
+                        }
+    
+                        public function run(): void {
+    
+                            if ($this->hasProvidedOption('help')) {
+                                $this->runHelp();
+                                return;
+                            }
+    
+                            $name = $this->getProvidedOption('name');
+    
+                            self::eol();
+                            self::echo(sprintf('Hello %s!', $name), Color::FOREGROUND_COLOR_CYAN);
+                            self::eol();
+                            self::eol();
+                        }
+                    }))
+                    ->addChild((new class('phpversion') extends Cmd {
+    
+                        public function init(): void {
+    
+                            $this
+                                ->addOption('h|help', [
+                                    'description' => 'Displays the command help.'
+                                ])
+                                ->setDescription(
+                                    'Displays the current php version of your cli.'
+                                );
+                        }
+    
+                        public function run(): void {
+    
+                            if ($this->hasProvidedOption('help')) {
+                                $this->runHelp();
+                                return;
+                            }
+                            
+                            self::eol();
+                            self::echo('  Your PHP version is:', Color::FOREGROUND_COLOR_YELLOW);
+                            self::eol();
+                            self::echo('  ' . PHP_VERSION);
+                            self::eol();
+                            self::eol();
+                        }
+                    }))
+                );
+        }
+    
+    })->run();
+    
+As you might have already recognized a subcommand has been configured by calling the `Cmd::addChild()` method.
+That method accepts another `Cmd` object which may also have one or more child commands assigned to it.
