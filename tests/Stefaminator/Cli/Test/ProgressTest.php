@@ -48,6 +48,17 @@ class ProgressTest extends TestCase {
             $this->assertCount(1, $matches_empty);
             $this->assertEquals($total - $done, mb_strlen($matches_empty[0]));
         }
+
+        /**
+         * test done larger than total
+         */
+
+        ob_start();
+        Progress::showStatus(101, 100);
+        $out = ob_get_clean();
+
+        $this->assertEmpty($out);
+
     }
 
 

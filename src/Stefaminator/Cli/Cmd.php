@@ -115,29 +115,46 @@ abstract class Cmd {
         $collection = new OptionCollection();
 
         foreach ($specs as $k => $v) {
-            $opt = $collection->add($k, $v['description']);
-
-            if (array_key_exists('isa', $v)) {
-                if(array_key_exists('regex', $v) && strtolower($v['isa']) === 'regex') {
-                    $opt->isa('regex', $v['regex']);
-                } else {
-                    $opt->isa($v['isa']);
-                }
-            }
-
-            if (array_key_exists('default', $v)) {
-                $opt->defaultValue($v['default']);
-                continue;
-            }
-
-            if (array_key_exists('incremental', $v) && $v['incremental'] === true) {
-                $opt->incremental();
-                continue;
+            try {
+                $this->fillOptionCollection($collection, $k, $v);
+            } catch (Exception $e) {
+                // Option Specs seems to be invalid.
+                // Continue with other options without interruption.
             }
         }
 
         $this->optionCollection = $collection;
         return $this->optionCollection;
+    }
+
+    /**
+     * @param OptionCollection $collection
+     * @param string $spec
+     * @param array $config
+     * @throws Exception
+     */
+    private function fillOptionCollection(OptionCollection $collection, string $spec, array $config): void {
+
+        $opt = $collection->add($spec, $config['description']??'');
+
+        if (array_key_exists('isa', $config)) {
+            if(array_key_exists('regex', $config) && strtolower($config['isa']) === 'regex') {
+                $opt->isa('regex', $config['regex']);
+            } else {
+                $opt->isa($config['isa']);
+            }
+        }
+
+        if (array_key_exists('default', $config)) {
+            $opt->defaultValue($config['default']);
+            return;
+        }
+
+        if (array_key_exists('incremental', $config) && $config['incremental'] === true) {
+            $opt->incremental();
+            return;
+        }
+
     }
 
     public function getProvidedOption(string $key) {
