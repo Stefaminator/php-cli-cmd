@@ -36,6 +36,9 @@ jobs:
       - name: Install dependencies
         run: composer install --prefer-dist --no-interaction --no-progress
 
+      - name: Run PHPStan
+        run: vendor/bin/phpstan analyse --no-progress
+
       - name: Run PHPUnit
         run: vendor/bin/phpunit
         env:

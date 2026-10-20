@@ -21,15 +21,12 @@ abstract class App {
         try {
             $runner = $this->parse($argv);
 
-            if ($runner !== null) {
-
-                if ($runner->handleOptionParseException()) {
-                    return;
-                }
-
-                $runner->run();
-
+            if ($runner->handleOptionParseException()) {
+                return;
             }
+
+            $runner->run();
+
         } catch (Exception $e) {
 
             Cmd::eol();
@@ -38,8 +35,8 @@ abstract class App {
             Cmd::echo($e->getMessage(), Color::FOREGROUND_COLOR_RED);
             Cmd::eol();
         }
-
     }
+
 
     /**
      * @param array $argv
