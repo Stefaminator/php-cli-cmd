@@ -1,6 +1,6 @@
 {
   "name": "stefaminator/php-cli-cmd",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "type": "library",
   "description": "The PHP CLI CMD library",
   "keywords": ["cli", "cmd"],
