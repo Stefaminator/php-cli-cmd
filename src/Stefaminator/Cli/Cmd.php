@@ -65,7 +65,7 @@ abstract class Cmd {
      * The constructor.
      * @param string|null $cmd
      */
-    public function __construct(string $cmd = null) {
+    public function __construct(?string $cmd = null) {
         $this->cmd = $cmd;
         $this->init();
     }
