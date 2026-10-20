@@ -6,12 +6,9 @@
 This library supports setting up options and arguments,  subcommands and offers an integrated command help. 
 Use the color or progress bar helpers to visualize important outputs.
 
-![Packagist PHP Version Support](https://img.shields.io/packagist/php-v/stefaminator/php-cli-cmd)
-[![Latest Stable Version](https://poser.pugx.org/stefaminator/php-cli-cmd/v)](https://packagist.org/packages/stefaminator/php-cli-cmd)
-[![Build Status](https://travis-ci.com/Stefaminator/php-cli-cmd.svg?token=sw1WsDwrxA6DdfoYeixr&branch=master)](https://travis-ci.com/Stefaminator/php-cli-cmd)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/Stefaminator/php-cli-cmd/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/Stefaminator/php-cli-cmd/?branch=master)
-[![Code Coverage](https://scrutinizer-ci.com/g/Stefaminator/php-cli-cmd/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/Stefaminator/php-cli-cmd/?branch=master)
-![Packagist License](https://img.shields.io/packagist/l/stefaminator/php-cli-cmd)
+[![Tests](https://github.com/Stefaminator/php-cli-cmd/actions/workflows/tests.yml/badge.svg)](https://github.com/Stefaminator/php-cli-cmd/actions/workflows/tests.yml)
+![PHP](https://img.shields.io/badge/PHP-%3E%3D8.3-blue)
+![License](https://img.shields.io/badge/License-MIT-green)
 
 ## Table of Contents
 

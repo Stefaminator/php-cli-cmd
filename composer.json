@@ -1,16 +1,18 @@
+
 {
   "name": "stefaminator/php-cli-cmd",
-  "version": "2.0.0",
   "type": "library",
   "description": "The PHP CLI CMD library",
   "keywords": ["cli", "cmd"],
   "license": "MIT",
   "autoload": {
     "psr-4": {
-      "Stefaminator\\": [
-        "src/Stefaminator/",
-        "tests/Stefaminator/"
-      ]
+      "Stefaminator\\": "src/Stefaminator/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Stefaminator\\Cli\\Test\\": "tests/Stefaminator/Cli/Test/"
     }
   },
   "require": {
@@ -23,10 +25,5 @@
     "phpunit/phpunit": "^11.0",
     "ext-mbstring": "*",
     "squizlabs/php_codesniffer": "^4.0"
-  },
-  "config": {
-    "platform": {
-      "php": "8.3"
-    }
   }
 }
